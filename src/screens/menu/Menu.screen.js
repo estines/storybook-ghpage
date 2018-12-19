@@ -6,7 +6,8 @@ import {
   Image,
   FlatList,
   Dimensions,
-  TouchableOpacity
+  TouchableOpacity,
+  ScrollView
 } from 'react-native'
 import HeaderImageScrollView from 'react-native-image-header-scroll-view'
 import { LinearGradient } from 'expo'
@@ -18,6 +19,7 @@ import BAHT_SYMBOL_GROUP from '../../assets/img/bath-symbol-group.png'
 // components
 import CategoryCard from '../../components/CategoryCard.component'
 import SearchMenu from '../../components/SearchMenu.component'
+import MenuDetail from '../../components/modals/MenuDetail.modal'
 
 // services
 import menuService from '../../services/menu.service'
@@ -34,7 +36,10 @@ const CATEGORIES = [
 
 export default class LoginScreen extends Component {
   state = {
-    menu: []
+    menu: [],
+    detailVisible: false,
+    focusMenu: null,
+    cart: []
   }
 
   componentDidMount () {
@@ -50,10 +55,64 @@ export default class LoginScreen extends Component {
   }
 
   renderCategory = ({ item }) => {
-    return <CategoryCard data={item} menu={this.state.menu} />
+    const { cart } = this.state
+    return (
+      <CategoryCard
+        data={item}
+        cart={cart}
+        menu={this.state.menu}
+        addToCart={this.addToCart}
+      />
+    )
   }
+
+  addToCart = async (menu, type) => {
+    if (type === 'INCREMENT') {
+      this.setState({
+        focusMenu: menu,
+        detailVisible: true
+      })
+    } else if (type === 'DECREMENT') {
+      const { id } = menu
+      let { cart } = this.state
+      let targetItems = await cart.filter(c => c.productId === id)
+      if (targetItems && targetItems.length > 0) {
+        const targetItem = targetItems[targetItems.length - 1]
+        const { quantity } = targetItem
+        targetItems = await targetItems.filter(t => t.id !== targetItem.id)
+        if (quantity > 1) {
+          const newQuantity = quantity - 1
+          targetItem.quantity = newQuantity
+          targetItems = [...targetItems, targetItem]
+        }
+      }
+      const newCart = await cart.filter(c => c.productId !== id)
+      this.setState({
+        cart: [...newCart, ...targetItems]
+      })
+    }
+  }
+
+  onSubmit = (item) => {
+    const { cart } = this.state
+    this.setState({
+      cart: [ ...cart, item ],
+      detailVisible: false
+    })
+  }
+
+  renderTotalItems = () => {
+    const { cart } = this.state
+    let total = 0
+    for (let item of cart) {
+      const { quantity } = item
+      total += quantity
+    }
+    return total
+  }
+
   render () {
-    const { menu } = this.state
+    const { menu, detailVisible, focusMenu } = this.state
     return (
       <View style={styles.screen}>
         <HeaderImageScrollView
@@ -61,6 +120,9 @@ export default class LoginScreen extends Component {
           minHeight={100}
           headerImage={HEADER}
           showsVerticalScrollIndicator={false}
+          style={{ paddingBottom: 100 }}
+          contentContainerStyle={{ marginBottom: 100 }}
+          ScrollViewComponent={ScrollView}
         >
           <View style={styles.container}>
             <View style={[styles.card, styles.restaurantCard]}>
@@ -79,27 +141,32 @@ export default class LoginScreen extends Component {
               extraData={menu}
               scrollEnabled={false}
               showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingBottom: 150 }}
             />
           </View>
-          <View style={styles.submitButtonWrapper}>
-            <TouchableOpacity style={styles.submitBtnTouch}>
-              <LinearGradient
-                style={styles.submitBtn}
-                colors={['#EE805F', '#E9685F', '#E8615F']}
-                start={[0, 0]}
-                end={[1, 0]}
-              >
-                <Text style={styles.submitBtnText}>Order 0 item</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-          </View>
         </HeaderImageScrollView>
+        <View style={styles.submitButtonWrapper}>
+          <TouchableOpacity style={styles.submitBtnTouch}>
+            <LinearGradient
+              style={styles.submitBtn}
+              colors={['#EE805F', '#E9685F', '#E8615F']}
+              start={[0, 0]}
+              end={[1, 0]}
+            >
+              <Text style={styles.submitBtnText}>Order {this.renderTotalItems()} item</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+        <MenuDetail
+          onClose={() => this.setState({ detailVisible: false })}
+          visible={detailVisible}
+          data={focusMenu}
+          submit={this.onSubmit}
+        />
       </View>
     )
   }
 }
-
-const { height: HEIGHT } = Dimensions.get('window')
 
 const styles = StyleSheet.create({
   submitBtnTouch: {
@@ -112,7 +179,7 @@ const styles = StyleSheet.create({
   },
   submitButtonWrapper: {
     position: 'absolute',
-    top: HEIGHT - 300,
+    bottom: 50,
     alignItems: 'center',
     width: '100%'
   },

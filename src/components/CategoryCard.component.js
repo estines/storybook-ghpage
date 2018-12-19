@@ -19,11 +19,20 @@ export default class CategoryCard extends Component {
     showBody: false
   }
 
-  onPressCounter = (name, amount) => {
-    this.setState({ [name]: amount })
+  getQuantity = (id) => {
+    const { cart } = this.props
+    const targetItems = cart.filter(c => c.productId === id)
+    console.log(targetItems, 'targetItems')
+    let total = 0
+    for (let item of targetItems) {
+      total += item.quantity
+    }
+    return total
   }
+
   renderMenu = ({ item }) => {
     const { img, name, description, price, id } = item
+    const quantity = this.getQuantity(id)
     const counterName = `amount_${id}`
     return (
       <View style={styles.menuItem}>
@@ -36,8 +45,8 @@ export default class CategoryCard extends Component {
           <View style={[styles.row, styles.priceRow]}>
             <Text style={styles.price}>{`฿ ${price}`}</Text>
             <CounterButton
-              value={this.state[counterName] || 0}
-              onChange={this.onPressCounter}
+              value={quantity}
+              onChange={(type) => this.props.addToCart(item, type)}
               name={counterName}
             />
           </View>
@@ -72,7 +81,7 @@ export default class CategoryCard extends Component {
             data={menu}
             keyExtractor={(item, index) => index.toString()}
             renderItem={this.renderMenu}
-            extraData={this.state}
+            extraData={this.props}
           />
         </Collapsible>
       </View>
