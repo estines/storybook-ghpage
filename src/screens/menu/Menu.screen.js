@@ -5,12 +5,15 @@ import {
   Text,
   Image,
   FlatList,
-  Dimensions,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  SafeAreaView
 } from 'react-native'
 import HeaderImageScrollView from 'react-native-image-header-scroll-view'
 import { LinearGradient } from 'expo'
+import { Header } from 'react-native-elements'
+import { ifIphoneX } from 'react-native-iphone-x-helper'
+import { MaterialIcons } from '@expo/vector-icons'
 
 // assets
 import HEADER from '../../assets/img/menu-bg.png'
@@ -33,6 +36,31 @@ const CATEGORIES = [
   { icon: require('../../assets/icon/rice.png'), title: 'Rice' },
   { icon: require('../../assets/icon/drinks.png'), title: 'Drinks' }
 ]
+
+const ScreenHeader = props => {
+  return (
+    <SafeAreaView style={{ backgroundColor: 'transparent', height: 50 }}>
+      <Header
+        leftComponent={
+          <TouchableOpacity style={styles.backButtonStyle} onPress={props.back}>
+            <MaterialIcons name="keyboard-arrow-left" size={30} color="#FFF" />
+          </TouchableOpacity>
+        }
+        centerComponent={{
+          text: 'Menu',
+          style: { color: '#FFF', fontSize: 20 }
+        }}
+        barStyle="light-content"
+        containerStyle={{
+          backgroundColor: 'transparent',
+          justifyContent: 'space-around',
+          borderBottomWidth: 0,
+          paddingTop: ifIphoneX ? 0 : 10
+        }}
+      />
+    </SafeAreaView>
+  )
+}
 
 export default class LoginScreen extends Component {
   state = {
@@ -93,10 +121,10 @@ export default class LoginScreen extends Component {
     }
   }
 
-  onSubmit = (item) => {
+  onSubmit = item => {
     const { cart } = this.state
     this.setState({
-      cart: [ ...cart, item ],
+      cart: [...cart, item],
       detailVisible: false
     })
   }
@@ -111,6 +139,14 @@ export default class LoginScreen extends Component {
     return total
   }
 
+  back = () => {
+    this.props.navigation.goBack()
+  }
+
+  submit = () => {
+    this.props.navigation.goBack()
+  }
+
   render () {
     const { menu, detailVisible, focusMenu } = this.state
     return (
@@ -123,6 +159,11 @@ export default class LoginScreen extends Component {
           style={{ paddingBottom: 100 }}
           contentContainerStyle={{ marginBottom: 100 }}
           ScrollViewComponent={ScrollView}
+          renderFixedForeground={() => (
+            <View style={styles.foreground}>
+              <ScreenHeader back={this.back} />
+            </View>
+          )}
         >
           <View style={styles.container}>
             <View style={[styles.card, styles.restaurantCard]}>
@@ -146,14 +187,16 @@ export default class LoginScreen extends Component {
           </View>
         </HeaderImageScrollView>
         <View style={styles.submitButtonWrapper}>
-          <TouchableOpacity style={styles.submitBtnTouch}>
+          <TouchableOpacity style={styles.submitBtnTouch} onPress={this.submit}>
             <LinearGradient
               style={styles.submitBtn}
               colors={['#EE805F', '#E9685F', '#E8615F']}
               start={[0, 0]}
               end={[1, 0]}
             >
-              <Text style={styles.submitBtnText}>Order {this.renderTotalItems()} item</Text>
+              <Text style={styles.submitBtnText}>
+                Order {this.renderTotalItems()} item
+              </Text>
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -169,6 +212,17 @@ export default class LoginScreen extends Component {
 }
 
 const styles = StyleSheet.create({
+  backButtonStyle: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  foreground: {
+    flex: 1
+  },
   submitBtnTouch: {
     width: '60%',
     position: 'relative'
