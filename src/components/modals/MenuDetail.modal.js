@@ -132,7 +132,7 @@ export default class MenuDetailModal extends Component {
   }
 
   calTotalPrice = () => {
-    const { selectedOptions } = this.state
+    const { selectedOptions, quantity } = this.state
     const {
       data: { options, price }
     } = this.props
@@ -166,11 +166,11 @@ export default class MenuDetailModal extends Component {
         }
       }
     }
-    return price + totalOptionPrice
-  }
+    const pricePerAmount = price + totalOptionPrice
+    return pricePerAmount > 0 ? pricePerAmount * quantity : pricePerAmount  }
 
   calTotalPriceAsync = async () => {
-    const { selectedOptions } = this.state
+    const { selectedOptions, quantity } = this.state
     const {
       data: { options, price }
     } = this.props
@@ -204,7 +204,8 @@ export default class MenuDetailModal extends Component {
         }
       }
     }
-    return price + totalOptionPrice
+    const pricePerAmount = price + totalOptionPrice
+    return pricePerAmount > 0 ? pricePerAmount * quantity : pricePerAmount
   }
 
   onQuantityChange = type => {

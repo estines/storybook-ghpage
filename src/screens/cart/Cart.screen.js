@@ -18,7 +18,6 @@ class CartScreen extends Component {
       this.setState({ loading: true })
       await this.props.fetchMenu()
       this.setState({ loading: false })
-      console.log(this.props, 'this.props')
     } catch (error) {
       this.setState({ loading: false })
     }
@@ -46,7 +45,7 @@ class CartScreen extends Component {
           )}
         >
           <View style={styles.container}>
-            <TableCard />
+            <TableCard cart={cart} />
             <View style={styles.br} />
             <CardItemCard add={this.showMenu} cart={cart} />
           </View>

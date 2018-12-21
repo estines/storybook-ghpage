@@ -15,7 +15,24 @@ const Guest = props => {
   )
 }
 
+const parseSatang = value => {
+  if (value && value > 0) {
+    return `.${value.toFixed(2).replace('0.', '')}`
+  } else {
+    return '.00'
+  }
+}
+
 export default props => {
+  const { cart } = props
+  let totalPrice = 0
+  if (cart && cart.length > 1) {
+    totalPrice = cart.reduce((a, b) => a.totalPrice + b.totalPrice)
+  } else if (cart && cart.length === 1) {
+    totalPrice = cart[0].totalPrice
+  }
+  let totalPriceSatang = totalPrice % 1
+  let totalPriceBaht = totalPrice - totalPriceSatang
   return (
     <View style={styles.card}>
       <View style={styles.content}>
@@ -55,8 +72,10 @@ export default props => {
       <View style={styles.circle}>
         <Text style={styles.total}>Total</Text>
         <View style={styles.textRow}>
-          <Text style={styles.price}>฿1250</Text>
-          <Text style={styles.priceDecimals}>.00</Text>
+          <Text style={styles.price}>฿{totalPriceBaht}</Text>
+          <Text style={styles.priceDecimals}>
+            {parseSatang(totalPriceSatang)}
+          </Text>
         </View>
       </View>
     </View>
