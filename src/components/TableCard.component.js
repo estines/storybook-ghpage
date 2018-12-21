@@ -27,7 +27,7 @@ export default props => {
   const { cart } = props
   let totalPrice = 0
   if (cart && cart.length > 1) {
-    totalPrice = cart.reduce((a, b) => a.totalPrice + b.totalPrice)
+    totalPrice = cart.map(c => c.totalPrice).reduce((a, b) => a + b)
   } else if (cart && cart.length === 1) {
     totalPrice = cart[0].totalPrice
   }
@@ -72,7 +72,7 @@ export default props => {
       <View style={styles.circle}>
         <Text style={styles.total}>Total</Text>
         <View style={styles.textRow}>
-          <Text style={styles.price}>฿{totalPriceBaht}</Text>
+          <Text style={styles.price}>฿{totalPriceBaht.toLocaleString()}</Text>
           <Text style={styles.priceDecimals}>
             {parseSatang(totalPriceSatang)}
           </Text>
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   },
   price: {
     color: '#FFF',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600'
   },
   total: {
@@ -121,9 +121,9 @@ const styles = StyleSheet.create({
     fontSize: 10
   },
   circle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 110,
+    height: 110,
+    borderRadius: 55,
     backgroundColor: '#FF3B30',
     borderColor: '#FFF',
     borderWidth: 5,

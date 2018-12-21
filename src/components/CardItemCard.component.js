@@ -47,7 +47,7 @@ const renderCart = (cart, add) => {
           keyExtractor={(item, index) => index.toString()}
           extraData={cart}
           renderItem={renderCartItem}
-          style={{ width: '100%', paddingBottom: 30 }}
+          style={{ width: '100%' }}
         />
       </View>
     )
@@ -119,17 +119,13 @@ const styles = StyleSheet.create({
     marginBottom: -30
   },
   card: {
-    borderRadius: 10,
-    shadowColor: 'gray',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    borderWidth: 1,
+    borderRadius: 0,
+    borderWidth: 0.2,
     borderColor: '#dbdbdb',
     padding: 20,
     backgroundColor: '#FFF',
-    position: 'relative',
-    alignItems: 'center',
-    marginBottom: 50
+    marginVertical: 5,
+    marginHorizontal: 5,
+    alignItems: 'center'
   }
 })

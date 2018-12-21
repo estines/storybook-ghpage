@@ -308,7 +308,7 @@ export default class MenuDetailModal extends Component {
                     start={[0, 0]}
                     end={[1, 0]}
                   >
-                    <Text style={styles.totalPrice}>THB {totalPrice}</Text>
+                    <Text style={styles.totalPrice}>THB {totalPrice.toLocaleString()}</Text>
                     <Text style={styles.addToCart}>ADD TO CART</Text>
                   </LinearGradient>
                 </TouchableOpacity>

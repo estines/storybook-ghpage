@@ -1,5 +1,7 @@
 import React from 'react'
-import { View, StyleSheet, Text } from 'react-native'
+import { View, StyleSheet, Text, Image } from 'react-native'
+
+const ED_SHEERAN = 'https://ichef.bbci.co.uk/images/ic/960x540/p02kq8k6.jpg'
 
 const renderOptions = options => {
   return options.map((option, index) => (
@@ -9,18 +11,34 @@ const renderOptions = options => {
   ))
 }
 
+const Status = ({ status }) => {
+  let color = '#9ED14A'
+  if (status === 'busy') {
+    color = '#F18E54'
+  }
+  return <View style={[styles.status, { backgroundColor: color }]} />
+}
+
+const Avatar = ({ index }) => {
+  return (
+    <Image source={{ uri: ED_SHEERAN }} style={[styles.avatar, { zIndex: index }]} />
+  )
+}
+
 export default props => {
   const { data, index } = props
   const { quantity, productName, totalPrice, selectedOptionsName, note } = data
   return (
     <View style={styles.wrapper}>
       <View style={styles.row}>
-        <View style={styles.col}>
-          {index === 0 ? <Text style={styles.thead}>Qty</Text> : null}
+        <View style={[styles.col, styles.qtyCol]}>
+          {index === 0 ? <Text style={[styles.thead]}>Qty</Text> : null}
           <Text style={styles.qty}>{quantity} x</Text>
         </View>
         <View style={[styles.col, styles.nameCol]}>
-          {index === 0 ? <Text style={[styles.thead, styles.nameThead]}>Order Details</Text> : null}
+          {index === 0 ? (
+            <Text style={[styles.thead, styles.nameThead]}>Order Details</Text>
+          ) : null}
           <Text style={styles.name}>{productName}</Text>
           <View style={styles.br} />
           {renderOptions(selectedOptionsName, note)}
@@ -28,10 +46,17 @@ export default props => {
         </View>
         <View style={[styles.col, { flex: 3 }]}>
           {index === 0 ? <Text style={styles.thead}>Guests</Text> : null}
+          <View style={styles.textRow}>
+            <Avatar index={2} />
+            <Avatar index={1} />
+          </View>
         </View>
-        <View style={[styles.col, { flex: 2 }]}>
+        <View style={[styles.col, { flex: 2.5 }]}>
           {index === 0 ? <Text style={styles.thead}>Price (฿)</Text> : null}
-          <Text style={styles.price}>{totalPrice}</Text>
+          <View style={styles.textRow}>
+            <Text style={styles.price}>{totalPrice.toLocaleString()}</Text>
+            <Status status={index % 2 === 0 ? 'ready' : 'busy'} />
+          </View>
         </View>
       </View>
     </View>
@@ -39,6 +64,32 @@ export default props => {
 }
 
 const styles = StyleSheet.create({
+  avatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    marginLeft: -10,
+    borderColor: '#FFF',
+    borderWidth: 1,
+    shadowColor: 'gray',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10
+  },
+  textRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end'
+  },
+  status: {
+    width: 15,
+    height: 15,
+    borderRadius: 7.5,
+    backgroundColor: '#9ED14A'
+  },
+  qtyCol: {
+    flex: 1.2
+  },
   nameThead: {
     alignSelf: 'flex-start'
   },
@@ -49,7 +100,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   price: {
-    fontSize: 16
+    fontSize: 14,
+    marginRight: 10
   },
   br: {
     marginVertical: 5
@@ -60,7 +112,7 @@ const styles = StyleSheet.create({
     marginVertical: 1
   },
   name: {
-    fontSize: 16
+    fontSize: 14
   },
   nameCol: {
     flex: 4,
