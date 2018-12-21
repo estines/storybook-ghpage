@@ -10,9 +10,8 @@ const renderOptions = options => {
 }
 
 export default props => {
-  console.log(props, 'props..')
   const { data, index } = props
-  const { quantity, productName, totalPrice, selectedOptionsName } = data
+  const { quantity, productName, totalPrice, selectedOptionsName, note } = data
   return (
     <View style={styles.wrapper}>
       <View style={styles.row}>
@@ -24,7 +23,8 @@ export default props => {
           {index === 0 ? <Text style={[styles.thead, styles.nameThead]}>Order Details</Text> : null}
           <Text style={styles.name}>{productName}</Text>
           <View style={styles.br} />
-          {renderOptions(selectedOptionsName)}
+          {renderOptions(selectedOptionsName, note)}
+          <Text style={styles.option}>{note}</Text>
         </View>
         <View style={[styles.col, { flex: 3 }]}>
           {index === 0 ? <Text style={styles.thead}>Guests</Text> : null}
