@@ -1,7 +1,10 @@
 import React, { Component } from 'react'
 import { View, StyleSheet, ScrollView, Text } from 'react-native'
 import HeaderImageScrollView from 'react-native-image-header-scroll-view'
+import { connect } from 'react-redux'
 
+// redux
+import { fetchMenu } from '../../store/actions'
 // assets
 import HEADER from '../../assets/img/cart-header.png'
 
@@ -9,11 +12,23 @@ import HEADER from '../../assets/img/cart-header.png'
 import TableCard from '../../components/TableCard.component'
 import CardItemCard from '../../components/CardItemCard.component'
 
-export default class LoginScreen extends Component {
+class CartScreen extends Component {
+  async componentDidMount () {
+    try {
+      this.setState({ loading: true })
+      await this.props.fetchMenu()
+      this.setState({ loading: false })
+      console.log(this.props, 'this.props')
+    } catch (error) {
+      this.setState({ loading: false })
+    }
+  }
+
   showMenu = () => {
     this.props.navigation.navigate('Menu')
   }
   render () {
+    const { cart: { cart } } = this.props
     return (
       <View style={styles.screen}>
         <HeaderImageScrollView
@@ -33,7 +48,7 @@ export default class LoginScreen extends Component {
           <View style={styles.container}>
             <TableCard />
             <View style={styles.br} />
-            <CardItemCard add={this.showMenu} />
+            <CardItemCard add={this.showMenu} cart={cart} />
           </View>
         </HeaderImageScrollView>
       </View>
@@ -63,3 +78,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#F7F7F7'
   }
 })
+
+const mapState = state => {
+  const { menu, cart } = state
+  return {
+    menu,
+    cart
+  }
+}
+export default connect(
+  mapState,
+  { fetchMenu }
+)(CartScreen)

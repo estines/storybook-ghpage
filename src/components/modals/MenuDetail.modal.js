@@ -125,7 +125,6 @@ export default class MenuDetailModal extends Component {
     let totalOptionPrice = 0
     if (selectedOptions && selectedOptions.length > 0) {
       for (let selectedOption of selectedOptions) {
-        console.log(selectedOption, 'selectedOption...')
         if (selectedOption.optionIds) {
           const { optionIds, groupId } = selectedOption
           for (let optionId of optionIds) {
@@ -142,6 +141,38 @@ export default class MenuDetailModal extends Component {
           const targetGroup = options.find(o => o.id === groupId)
           if (targetGroup && targetGroup.id) {
             const targetOption = targetGroup.options.find(g => g.id === optionId)
+            if (targetOption && targetOption.price) {
+              totalOptionPrice += targetOption.price
+            }
+          }
+        }
+      }
+    }
+    return price + totalOptionPrice
+  }
+
+  calTotalPriceAsync = async () => {
+    const { selectedOptions } = this.state
+    const { data: { options, price } } = this.props
+    let totalOptionPrice = 0
+    if (selectedOptions && selectedOptions.length > 0) {
+      for (let selectedOption of selectedOptions) {
+        if (selectedOption.optionIds) {
+          const { optionIds, groupId } = selectedOption
+          for (let optionId of optionIds) {
+            const targetGroup = await options.find(o => o.id === groupId)
+            if (targetGroup && targetGroup.id) {
+              const targetOption = await targetGroup.options.find(g => g.id === optionId)
+              if (targetOption && targetOption.price) {
+                totalOptionPrice += targetOption.price
+              }
+            }
+          }
+        } else {
+          const { groupId, optionId } = selectedOption
+          const targetGroup = await options.find(o => o.id === groupId)
+          if (targetGroup && targetGroup.id) {
+            const targetOption = await targetGroup.options.find(g => g.id === optionId)
             if (targetOption && targetOption.price) {
               totalOptionPrice += targetOption.price
             }
@@ -238,10 +269,37 @@ export default class MenuDetailModal extends Component {
     }
   }
 
-  submit = () => {
+  getOptionsName = async (selectedOptions) => {
+    try {
+      let optionsName = []
+      const { data: { options } } = this.props
+      for (let selectedOption of selectedOptions) {
+        const { groupId, optionIds, optionId } = selectedOption
+        if (optionIds) {
+          const targetOptions = await options.find(o => o.id === groupId)
+          const { options: subOptions } = targetOptions
+          const targetSubOptions = await subOptions.filter(o => optionIds.includes(o.id))
+          const targetSubOptionsName = await targetSubOptions.map(o => o.name)
+          optionsName = [ ...optionsName, ...targetSubOptionsName ]
+        } else {
+          const targetOptions = await options.find(o => o.id === groupId)
+          const { options: subOptions } = targetOptions
+          const targetSubOptions = await subOptions.find(o => o.id === optionId)
+          optionsName = [ ...optionsName, targetSubOptions.name ]
+        }
+      }
+      return optionsName
+    } catch (error) {
+      throw error
+    }
+  }
+
+  submit = async () => {
     const { selectedOptions, quantity } = this.state
-    const { data: { id } } = this.props
-    this.props.submit({ id: Date.now(), productId: id, options: selectedOptions, quantity })
+    const totalPrice = await this.calTotalPriceAsync()
+    const { data: { id, name } } = this.props
+    const optionsName = await this.getOptionsName(selectedOptions)
+    this.props.submit({ id: Date.now(), productId: id, productName: name, options: selectedOptions, selectedOptionsName: optionsName, quantity, totalPrice })
     this.setState({
       selectedOptions: [],
       quantity: 1

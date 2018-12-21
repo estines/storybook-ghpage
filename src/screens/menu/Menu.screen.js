@@ -14,7 +14,10 @@ import { LinearGradient } from 'expo'
 import { Header } from 'react-native-elements'
 import { ifIphoneX } from 'react-native-iphone-x-helper'
 import { MaterialIcons } from '@expo/vector-icons'
+import { connect } from 'react-redux'
 
+// redux
+import { addToCart } from '../../store/actions/index'
 // assets
 import HEADER from '../../assets/img/menu-bg.png'
 import BAHT_SYMBOL_GROUP from '../../assets/img/bath-symbol-group.png'
@@ -23,9 +26,6 @@ import BAHT_SYMBOL_GROUP from '../../assets/img/bath-symbol-group.png'
 import CategoryCard from '../../components/CategoryCard.component'
 import SearchMenu from '../../components/SearchMenu.component'
 import MenuDetail from '../../components/modals/MenuDetail.modal'
-
-// services
-import menuService from '../../services/menu.service'
 
 const CATEGORIES = [
   {
@@ -62,7 +62,7 @@ const ScreenHeader = props => {
   )
 }
 
-export default class LoginScreen extends Component {
+class MenuScreen extends Component {
   state = {
     menu: [],
     detailVisible: false,
@@ -70,25 +70,14 @@ export default class LoginScreen extends Component {
     cart: []
   }
 
-  componentDidMount () {
-    this.fetchMenu()
-  }
-
-  fetchMenu = async () => {
-    this.setState({ loading: true })
-    setTimeout(() => {
-      const menu = menuService.list()
-      this.setState({ menu, loading: false })
-    }, 0)
-  }
-
   renderCategory = ({ item }) => {
     const { cart } = this.state
+    const { menu } = this.props
     return (
       <CategoryCard
         data={item}
         cart={cart}
-        menu={this.state.menu}
+        menu={menu}
         addToCart={this.addToCart}
       />
     )
@@ -144,11 +133,14 @@ export default class LoginScreen extends Component {
   }
 
   submit = () => {
+    const { cart } = this.state
+    this.props.addToCart(cart)
     this.props.navigation.goBack()
   }
 
   render () {
-    const { menu, detailVisible, focusMenu } = this.state
+    const { detailVisible, focusMenu } = this.state
+    const { menu } = this.props
     return (
       <View style={styles.screen}>
         <HeaderImageScrollView
@@ -291,3 +283,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#F7F7F7'
   }
 })
+
+const mapState = state => {
+  return state.menu
+}
+
+export default connect(
+  mapState,
+  { addToCart }
+)(MenuScreen)
