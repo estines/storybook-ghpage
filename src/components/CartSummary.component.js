@@ -15,7 +15,7 @@ export default props => {
       totalItems = cart[0].quantity
     }
     if (subTotal > 0) {
-      tax = subTotal * 0.7
+      tax = subTotal * 0.07
     }
     let totalPrice = subTotal + tax
     return (
