@@ -2594,6 +2594,12 @@ expo-sms@~1.1.0:
     expo-core "~1.2.0"
     expo-permissions-interface "~1.2.0"
 
+expo-svg-uri@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/expo-svg-uri/-/expo-svg-uri-1.0.0.tgz#1f181a52e3a2dfe99d4a76c55e469581eaea99c0"
+  dependencies:
+    xmldom "^0.1.27"
+
 expo@^31.0.2:
   version "31.0.6"
   resolved "https://registry.yarnpkg.com/expo/-/expo-31.0.6.tgz#3e1d8d617c959e7218aabf9ff523703183dfdbaf"
@@ -4830,6 +4836,12 @@ react-native-screens@^1.0.0-alpha.11:
   version "1.0.0-alpha.17"
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.17.tgz#8c1a7224b967c476670963fce7d06b946e7158e9"
 
+"react-native-svg-uri@https://github.com/agungjk/expo-svg-uri.git":
+  version "1.2.3"
+  resolved "https://github.com/agungjk/expo-svg-uri.git#f815ca43ce5a414ee67521af3b039ac12f933f0f"
+  dependencies:
+    xmldom "^0.1.22"
+
 react-native-svg@8.0.8:
   version "8.0.8"
   resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-8.0.8.tgz#5d4c636751d9db2d98a9b3cfc4ef45c4eac65d60"
@@ -6041,7 +6053,7 @@ xmldoc@^0.4.0:
   dependencies:
     sax "~1.1.1"
 
-xmldom@0.1.x:
+xmldom@0.1.x, xmldom@^0.1.22, xmldom@^0.1.27:
   version "0.1.27"
   resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.1.27.tgz#d501f97b3bdb403af8ef9ecc20573187aadac0e9"
 

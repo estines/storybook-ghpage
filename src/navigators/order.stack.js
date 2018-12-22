@@ -2,12 +2,21 @@ import { createStackNavigator } from 'react-navigation'
 
 import Menu from '../screens/menu/Menu.screen'
 import Cart from '../screens/cart/Cart.screen'
+import PaymentMethod from '../screens/payment/PaymentMethod.screen'
+import AddPaymentMethod from '../screens/payment/AddPaymentMethod.screen'
+
 const screens = {
   Cart: {
     screen: Cart
   },
   Menu: {
     screen: Menu
+  },
+  PaymentMethod: {
+    screen: PaymentMethod
+  },
+  AddPaymentMethod: {
+    screen: AddPaymentMethod
   }
 }
 

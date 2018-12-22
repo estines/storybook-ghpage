@@ -78,7 +78,10 @@ class CartScreen extends Component {
         <SafeAreaView style={{ backgroundColor: '#FFF' }}>
           <View style={styles.footer}>
             <View style={[styles.row, styles.justifyBetween]}>
-              <TouchableOpacity style={styles.paymentMethod}>
+              <TouchableOpacity
+                style={styles.paymentMethod}
+                onPress={() => this.props.navigation.navigate('PaymentMethod')}
+              >
                 <Image source={CASH} style={styles.paymentMethodIcon} />
                 <Text style={styles.paymentMethodBtnText}>CASH</Text>
                 <MaterialIcons
