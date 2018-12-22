@@ -1,12 +1,19 @@
 import React from 'react'
+import { Provider } from 'react-redux'
 
+import store from './src/store'
 import AuthStack from './src/navigators/auth.stack'
-import MenuScreen from './src/screens/menu/Menu.screen'
+import OrderStack from './src/navigators/order.stack'
+import PaymentMethod from './src/screens/payment/PaymentMethod.screen'
 
 console.disableYellowBox = true
 
 export default class App extends React.Component {
   render () {
-    return <MenuScreen />
+    return (
+      <Provider store={store}>
+        <OrderStack />
+      </Provider>
+    )
   }
 }

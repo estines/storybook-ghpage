@@ -8,7 +8,8 @@ import {
   FlatList,
   ScrollView,
   Modal,
-  TouchableOpacity
+  TouchableOpacity,
+  TextInput
 } from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo'
@@ -22,7 +23,8 @@ import CounterButton from '../../components/CounterButton.component'
 export default class MenuDetailModal extends Component {
   state = {
     selectedOptions: [],
-    quantity: 1
+    quantity: 1,
+    note: ''
   }
   open = () => {
     this.refs.detailModal.open()
@@ -87,7 +89,17 @@ export default class MenuDetailModal extends Component {
           {price && price > 0 ? (
             <Text style={styles.extraPrice}>{`+ ฿${price}`}</Text>
           ) : null}
-          {multiple ? <CheckBox checked={checked} onPress={() => this.selectMultipleOption(groupId, id)} /> : <Radio checked={checked} onPress={() => this.selectOption(groupId, id, checked)} />}
+          {multiple ? (
+            <CheckBox
+              checked={checked}
+              onPress={() => this.selectMultipleOption(groupId, id)}
+            />
+          ) : (
+            <Radio
+              checked={checked}
+              onPress={() => this.selectOption(groupId, id, checked)}
+            />
+          )}
         </View>
       </View>
     )
@@ -120,18 +132,21 @@ export default class MenuDetailModal extends Component {
   }
 
   calTotalPrice = () => {
-    const { selectedOptions } = this.state
-    const { data: { options, price } } = this.props
+    const { selectedOptions, quantity } = this.state
+    const {
+      data: { options, price }
+    } = this.props
     let totalOptionPrice = 0
     if (selectedOptions && selectedOptions.length > 0) {
       for (let selectedOption of selectedOptions) {
-        console.log(selectedOption, 'selectedOption...')
         if (selectedOption.optionIds) {
           const { optionIds, groupId } = selectedOption
           for (let optionId of optionIds) {
             const targetGroup = options.find(o => o.id === groupId)
             if (targetGroup && targetGroup.id) {
-              const targetOption = targetGroup.options.find(g => g.id === optionId)
+              const targetOption = targetGroup.options.find(
+                g => g.id === optionId
+              )
               if (targetOption && targetOption.price) {
                 totalOptionPrice += targetOption.price
               }
@@ -141,7 +156,9 @@ export default class MenuDetailModal extends Component {
           const { groupId, optionId } = selectedOption
           const targetGroup = options.find(o => o.id === groupId)
           if (targetGroup && targetGroup.id) {
-            const targetOption = targetGroup.options.find(g => g.id === optionId)
+            const targetOption = targetGroup.options.find(
+              g => g.id === optionId
+            )
             if (targetOption && targetOption.price) {
               totalOptionPrice += targetOption.price
             }
@@ -149,7 +166,46 @@ export default class MenuDetailModal extends Component {
         }
       }
     }
-    return price + totalOptionPrice
+    const pricePerAmount = price + totalOptionPrice
+    return pricePerAmount > 0 ? pricePerAmount * quantity : pricePerAmount  }
+
+  calTotalPriceAsync = async () => {
+    const { selectedOptions, quantity } = this.state
+    const {
+      data: { options, price }
+    } = this.props
+    let totalOptionPrice = 0
+    if (selectedOptions && selectedOptions.length > 0) {
+      for (let selectedOption of selectedOptions) {
+        if (selectedOption.optionIds) {
+          const { optionIds, groupId } = selectedOption
+          for (let optionId of optionIds) {
+            const targetGroup = await options.find(o => o.id === groupId)
+            if (targetGroup && targetGroup.id) {
+              const targetOption = await targetGroup.options.find(
+                g => g.id === optionId
+              )
+              if (targetOption && targetOption.price) {
+                totalOptionPrice += targetOption.price
+              }
+            }
+          }
+        } else {
+          const { groupId, optionId } = selectedOption
+          const targetGroup = await options.find(o => o.id === groupId)
+          if (targetGroup && targetGroup.id) {
+            const targetOption = await targetGroup.options.find(
+              g => g.id === optionId
+            )
+            if (targetOption && targetOption.price) {
+              totalOptionPrice += targetOption.price
+            }
+          }
+        }
+      }
+    }
+    const pricePerAmount = price + totalOptionPrice
+    return pricePerAmount > 0 ? pricePerAmount * quantity : pricePerAmount
   }
 
   onQuantityChange = type => {
@@ -167,7 +223,7 @@ export default class MenuDetailModal extends Component {
   renderBody = () => {
     const { data, onClose } = this.props
     if (data && data !== null) {
-      const { quantity } = this.state
+      const { quantity, note } = this.state
       const { gallery, name, description, estimated_time, options } = data
       const totalPrice = this.calTotalPrice()
       return (
@@ -210,12 +266,38 @@ export default class MenuDetailModal extends Component {
               scrollEnabled={false}
               extraData={this.state}
             />
+
+            <View style={styles.mainOption}>
+              <View
+                style={[styles.textRow, { justifyContent: 'space-between' }]}
+              >
+                <Text style={styles.mainOptionTitle}>Note</Text>
+                <Text style={styles.optional}>OPTIONAL</Text>
+              </View>
+              <View style={styles.br} />
+              <View style={styles.optionCard}>
+                <TextInput
+                  style={styles.textArea}
+                  multiline
+                  maxLength={60}
+                  placeholder="Maximum 60 Characters"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  value={note}
+                  onChangeText={note => this.setState({ note })}
+                />
+              </View>
+            </View>
           </ScrollView>
           <SafeAreaView>
             <View style={styles.footer}>
               <View style={styles.col}>
                 <View style={styles.qtyCol}>
-                  <CounterButton size="big" value={quantity} onChange={this.onQuantityChange} />
+                  <CounterButton
+                    size="big"
+                    value={quantity}
+                    onChange={this.onQuantityChange}
+                  />
                 </View>
               </View>
               <View style={[styles.col]}>
@@ -226,7 +308,7 @@ export default class MenuDetailModal extends Component {
                     start={[0, 0]}
                     end={[1, 0]}
                   >
-                    <Text style={styles.totalPrice}>THB {totalPrice}</Text>
+                    <Text style={styles.totalPrice}>THB {totalPrice.toLocaleString()}</Text>
                     <Text style={styles.addToCart}>ADD TO CART</Text>
                   </LinearGradient>
                 </TouchableOpacity>
@@ -238,10 +320,52 @@ export default class MenuDetailModal extends Component {
     }
   }
 
-  submit = () => {
-    const { selectedOptions, quantity } = this.state
-    const { data: { id } } = this.props
-    this.props.submit({ id: Date.now(), productId: id, options: selectedOptions, quantity })
+  getOptionsName = async selectedOptions => {
+    try {
+      let optionsName = []
+      const {
+        data: { options }
+      } = this.props
+      for (let selectedOption of selectedOptions) {
+        const { groupId, optionIds, optionId } = selectedOption
+        if (optionIds) {
+          const targetOptions = await options.find(o => o.id === groupId)
+          const { options: subOptions } = targetOptions
+          const targetSubOptions = await subOptions.filter(o =>
+            optionIds.includes(o.id)
+          )
+          const targetSubOptionsName = await targetSubOptions.map(o => o.name)
+          optionsName = [...optionsName, ...targetSubOptionsName]
+        } else {
+          const targetOptions = await options.find(o => o.id === groupId)
+          const { options: subOptions } = targetOptions
+          const targetSubOptions = await subOptions.find(o => o.id === optionId)
+          optionsName = [...optionsName, targetSubOptions.name]
+        }
+      }
+      return optionsName
+    } catch (error) {
+      throw error
+    }
+  }
+
+  submit = async () => {
+    const { selectedOptions, quantity, note } = this.state
+    const totalPrice = await this.calTotalPriceAsync()
+    const {
+      data: { id, name }
+    } = this.props
+    const optionsName = await this.getOptionsName(selectedOptions)
+    this.props.submit({
+      id: Date.now(),
+      productId: id,
+      productName: name,
+      options: selectedOptions,
+      selectedOptionsName: optionsName,
+      quantity,
+      totalPrice,
+      note
+    })
     this.setState({
       selectedOptions: [],
       quantity: 1
@@ -269,6 +393,12 @@ export default class MenuDetailModal extends Component {
 }
 
 const styles = StyleSheet.create({
+  textArea: {
+    minHeight: 100,
+    borderColor: '#CECECE',
+    borderWidth: 1,
+    padding: 10
+  },
   qtyCol: {
     flex: 1,
     justifyContent: 'center',

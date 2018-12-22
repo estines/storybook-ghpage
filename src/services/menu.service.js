@@ -17,7 +17,7 @@ const options = [
     options: [
       { id: 5, name: 'Egg', price: 0, highlight: true },
       { id: 6, name: 'Miso', price: 5 },
-      { id: 7, name: 'Chicken', price: 20 }
+      { id: 7, name: 'Chicken', price: 20.25 }
     ]
   },
   {
