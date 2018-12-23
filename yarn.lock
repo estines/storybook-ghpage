@@ -1852,6 +1852,10 @@ damerau-levenshtein@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/damerau-levenshtein/-/damerau-levenshtein-1.0.4.tgz#03191c432cb6eea168bb77f3a55ffdccb8978514"
 
+date-fns@^1.30.1:
+  version "1.30.1"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.30.1.tgz#2e71bf0b119153dbb4cc4e88d9ea5acfb50dc05c"
+
 debug@2.2.0:
   version "2.2.0"
   resolved "http://registry.npmjs.org/debug/-/debug-2.2.0.tgz#f87057e995b1a1f6ae6a4960664137bc56f039da"
@@ -2593,12 +2597,6 @@ expo-sms@~1.1.0:
   dependencies:
     expo-core "~1.2.0"
     expo-permissions-interface "~1.2.0"
-
-expo-svg-uri@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/expo-svg-uri/-/expo-svg-uri-1.0.0.tgz#1f181a52e3a2dfe99d4a76c55e469581eaea99c0"
-  dependencies:
-    xmldom "^0.1.27"
 
 expo@^31.0.2:
   version "31.0.6"
@@ -4749,6 +4747,12 @@ react-native-collapsible@^1.4.0:
   dependencies:
     prop-types "^15.6.2"
 
+react-native-custom-qr-codes@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-custom-qr-codes/-/react-native-custom-qr-codes-2.0.0.tgz#95fc813e1cbb5190cbdaf2657d361c5220a4feef"
+  dependencies:
+    prop-types "^15.5.10"
+
 react-native-debugger-open@^0.3.17:
   version "0.3.17"
   resolved "https://registry.yarnpkg.com/react-native-debugger-open/-/react-native-debugger-open-0.3.17.tgz#85b1b0dd76b0025d6f7c16a7c161b9d30a9bae93"
@@ -4835,12 +4839,6 @@ react-native-screens@1.0.0-alpha.15:
 react-native-screens@^1.0.0-alpha.11:
   version "1.0.0-alpha.17"
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.17.tgz#8c1a7224b967c476670963fce7d06b946e7158e9"
-
-"react-native-svg-uri@https://github.com/agungjk/expo-svg-uri.git":
-  version "1.2.3"
-  resolved "https://github.com/agungjk/expo-svg-uri.git#f815ca43ce5a414ee67521af3b039ac12f933f0f"
-  dependencies:
-    xmldom "^0.1.22"
 
 react-native-svg@8.0.8:
   version "8.0.8"
@@ -6053,7 +6051,7 @@ xmldoc@^0.4.0:
   dependencies:
     sax "~1.1.1"
 
-xmldom@0.1.x, xmldom@^0.1.22, xmldom@^0.1.27:
+xmldom@0.1.x:
   version "0.1.27"
   resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.1.27.tgz#d501f97b3bdb403af8ef9ecc20573187aadac0e9"
 
