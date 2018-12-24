@@ -6,7 +6,8 @@ import {
   Text,
   FlatList,
   SafeAreaView,
-  Image
+  Image,
+  TouchableOpacity
 } from 'react-native'
 import { ifIphoneX } from 'react-native-iphone-x-helper'
 import { Header } from 'react-native-elements'
@@ -56,17 +57,21 @@ export default class StampScreen extends Component {
     })
   }
 
+  view = () => {
+    this.props.navigation.navigate('StampRewards')
+  }
+
   renderStamp = ({ item }) => {
     const { name, img, quantity } = item
     return (
-      <View style={styles.stamp}>
+      <TouchableOpacity style={styles.stamp} onPress={this.view}>
         <Image source={img} style={styles.stampImg} />
         <View style={styles.stampContent}>
           <Text style={styles.name}>{name}</Text>
           <Text style={styles.quantity}>{quantity} Stamps</Text>
         </View>
         <MaterialIcons name="keyboard-arrow-right" size={30} color="#CECECE" />
-      </View>
+      </TouchableOpacity>
     )
   }
   render () {
