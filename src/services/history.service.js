@@ -1,4 +1,3 @@
-import format from 'date-fns/format'
 const mock_histories = [
   {
     id: 1,

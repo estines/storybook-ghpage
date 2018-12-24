@@ -1,7 +1,5 @@
 import React, { Component } from 'react'
 import { TouchableOpacity, View, Text, StyleSheet, Image } from 'react-native'
-import { MaterialIcons } from '@expo/vector-icons'
-import Collapsible from 'react-native-collapsible'
 
 import FREE_DRINK from '../assets/icon/free-drink.png'
 import EARNPOINT from '../assets/icon/earn-point.png'
@@ -11,17 +9,10 @@ export default class RewardHistory extends Component {
     contentVisible: false
   }
 
-  toggleContent = () => {
-    const { contentVisible } = this.state
-    this.setState({
-      contentVisible: !contentVisible
-    })
-  }
   render () {
     const {
-      data: { name, point, description }
+      data: { name, point }
     } = this.props
-    const { contentVisible } = this.state
     return (
       <View style={styles.wrapper}>
         <View style={styles.card}>
@@ -51,37 +42,10 @@ const styles = StyleSheet.create({
   use: {
     color: '#E45655'
   },
-  btnText: {
-    color: '#FFF',
-    fontWeight: '600'
-  },
-  btn: {
-    width: '60%',
-    backgroundColor: '#9ED14A',
-    padding: 10,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 20
-  },
   point: {
     marginBottom: 20,
     marginTop: 10,
     color: '#9ED14A'
-  },
-  description: {
-    fontSize: 10,
-    textAlign: 'center'
-  },
-  content: {
-    padding: 10,
-    alignItems: 'center'
-  },
-  hr: {
-    width: '100%',
-    height: 0.5,
-    backgroundColor: '#7E7E7E',
-    marginVertical: 10
   },
   row: {
     flex: 1,

@@ -19,7 +19,7 @@ export default class CategoryCard extends Component {
     showBody: false
   }
 
-  getQuantity = (id) => {
+  getQuantity = id => {
     const { cart } = this.props
     const targetItems = cart.filter(c => c.productId === id)
     console.log(targetItems, 'targetItems')
@@ -46,7 +46,7 @@ export default class CategoryCard extends Component {
             <Text style={styles.price}>{`฿ ${price}`}</Text>
             <CounterButton
               value={quantity}
-              onChange={(type) => this.props.addToCart(item, type)}
+              onChange={type => this.props.addToCart(item, type)}
               name={counterName}
             />
           </View>
@@ -69,7 +69,10 @@ export default class CategoryCard extends Component {
             <View style={styles.row}>
               <Image
                 source={icon}
-                style={[styles.menuIcon, { tintColor: showBody ? '#EE805F' : '#898989' }]}
+                style={[
+                  styles.menuIcon,
+                  { tintColor: showBody ? '#EE805F' : '#898989' }
+                ]}
               />
               <Text style={styles.menuTitle}>{title}</Text>
             </View>
@@ -116,10 +119,6 @@ const styles = StyleSheet.create({
     height: 80,
     width: 80,
     resizeMode: 'stretch'
-  },
-  menuDesc: {
-    flex: 1,
-    paddingLeft: 10
   },
   menuItem: {
     flexDirection: 'row',

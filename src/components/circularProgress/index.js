@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { View, Animated } from 'react-native'
+import { Animated } from 'react-native'
 import CircularProgress from './CircularProgress.component'
 const AnimatedProgress = Animated.createAnimatedComponent(CircularProgress)
 
-export default class AnimatedCircularProgress extends React.Component {
+export default class AnimatedCircularProgress extends Component {
   constructor (props) {
     super(props)
     this.state = {

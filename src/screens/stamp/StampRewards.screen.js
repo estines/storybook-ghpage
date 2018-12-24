@@ -8,8 +8,7 @@ import {
   Dimensions,
   Image,
   ImageBackground,
-  SafeAreaView,
-  TouchableOpacity
+  SafeAreaView
 } from 'react-native'
 import { Header } from 'react-native-elements'
 import { ifIphoneX } from 'react-native-iphone-x-helper'
@@ -228,11 +227,4 @@ const styles = StyleSheet.create({
   }
 })
 
-const mapState = state => {
-  const { menu, cart } = state
-  return {
-    menu,
-    cart
-  }
-}
 export default StampRewards

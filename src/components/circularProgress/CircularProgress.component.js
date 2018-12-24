@@ -4,7 +4,7 @@ import { View, ART } from 'react-native'
 
 const { Surface, Shape, Path, Group } = ART
 
-export default class CircularProgress extends React.Component {
+export default class CircularProgress extends Component {
   circlePath (cx, cy, r, degree) {
     return Path()
       .moveTo(cx, cx)
@@ -19,10 +19,6 @@ export default class CircularProgress extends React.Component {
         r
       )
       .arc(0, 2 * Math.cos((degree / 360) * 2 * Math.PI) * r, r, r)
-
-    // .move(-1*Math.sqrt(2)/2*r, 1*Math.sqrt(2)/2*r)
-    // .arc(Math.sqrt(2)*r, -1*Math.sqrt(2)*r, r, r)
-    // .arc(0, Math.sqrt(2)*r, r, r);
   }
 
   extractFill (fill) {

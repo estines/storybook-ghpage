@@ -42,10 +42,13 @@ const AppHeader = props => {
 
 const renderCountry = ({ item }, selected, onSelect, back) => {
   return (
-    <TouchableOpacity style={styles.list} onPress={() => {
-      onSelect(item)
-      back()
-    }}>
+    <TouchableOpacity
+      style={styles.list}
+      onPress={() => {
+        onSelect(item)
+        back()
+      }}
+    >
       <View style={styles.left}>
         <Image source={{ uri: item.flag }} style={styles.flag} />
         <Text style={styles.name}>{item.name}</Text>
@@ -84,10 +87,6 @@ const styles = StyleSheet.create({
   left: {
     flexDirection: 'row',
     alignItems: 'center'
-  },
-  listContainer: {
-    borderColor: '#CCCCCC',
-    borderTopWidth: 0.3
   },
   list: {
     padding: 10,

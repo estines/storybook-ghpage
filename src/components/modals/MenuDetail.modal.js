@@ -167,7 +167,8 @@ export default class MenuDetailModal extends Component {
       }
     }
     const pricePerAmount = price + totalOptionPrice
-    return pricePerAmount > 0 ? pricePerAmount * quantity : pricePerAmount  }
+    return pricePerAmount > 0 ? pricePerAmount * quantity : pricePerAmount
+  }
 
   calTotalPriceAsync = async () => {
     const { selectedOptions, quantity } = this.state
