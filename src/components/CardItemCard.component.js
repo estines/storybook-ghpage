@@ -17,7 +17,6 @@ import EMPTY_CART from '../assets/icon/empty-cart.png'
 import CartItem from './CartItem.component'
 
 const renderCartItem = ({ item, index }) => {
-  console.log(item, 'item...')
   return <CartItem data={item} index={index} />
 }
 const renderCart = (cart, add) => {
