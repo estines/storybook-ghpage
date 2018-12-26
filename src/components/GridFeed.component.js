@@ -49,8 +49,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     justifyContent: 'space-around',
     marginBottom: 1,
-    paddingLeft: 10,
-    paddingRight: 10
+    paddingHorizontal: 5
   },
   image: {
     width: '100%',

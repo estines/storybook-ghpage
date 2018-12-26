@@ -20,6 +20,7 @@ import FeedService from '../../services/feed.service'
 // components
 import GridFeed from '../../components/GridFeed.component'
 import RowFeed from '../../components/RowFeed.component'
+import Header from '../../components/Header.component'
 
 const ED_SHEERAN = 'https://ichef.bbci.co.uk/images/ic/960x540/p02kq8k6.jpg'
 
@@ -58,11 +59,16 @@ export default class FeedScreen extends Component {
     }
     return <RowFeed feeds={feeds} />
   }
+
+  back = () => {
+    this.props.navigation.navigate('HomeScreen')
+  }
   render () {
     const { status, name, viewType } = this.state
     return (
       <ScrollView style={styles.screen} showsVerticalScrollIndicator={false}>
         <View style={styles.top}>
+          <Header left="close" containerStyle={styles.header} onPressLeft={this.back} />
           <Text style={styles.name}>{name}</Text>
           <Text style={styles.status}>{status}</Text>
           <View style={styles.br} />
@@ -120,6 +126,9 @@ const avatarSize = WIDTH * 0.3
 const avatarWrapperSize = avatarSize + 10
 
 const styles = StyleSheet.create({
+  header: {
+    paddingBottom: 0
+  },
   viewActive: {
     tintColor: '#E45655'
   },
@@ -190,6 +199,7 @@ const styles = StyleSheet.create({
     minHeight: HEIGHT / 3
   },
   screen: {
-    flex: 1
+    flex: 1,
+    backgroundColor: '#FFF'
   }
 })

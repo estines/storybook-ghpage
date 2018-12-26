@@ -38,6 +38,6 @@ export default createSwitchNavigator(
     Auth: AuthStack
   },
   {
-    initialRouteName: 'AuthLoading'
+    initialRouteName: 'App'
   }
 )

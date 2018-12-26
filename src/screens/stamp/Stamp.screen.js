@@ -60,6 +60,10 @@ export default class StampScreen extends Component {
     this.props.navigation.navigate('StampRewards')
   }
 
+  back = () => {
+    this.props.navigation.navigate('HomeScreen')
+  }
+
   renderStamp = ({ item }) => {
     const { name, img, quantity } = item
     return (

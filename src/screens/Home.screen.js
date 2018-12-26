@@ -15,6 +15,8 @@ import BARCODE from '../assets/icon/barcode.png'
 import CART from '../assets/icon/cart.png'
 import ACCOUNT from '../assets/icon/account.png'
 import HISTORY from '../assets/icon/history.png'
+import STAMPS from '../assets/icon/stamps.png'
+import FEEDS from '../assets/icon/feeds.png'
 
 const Row = props => {
   return <View style={styles.row}>{props.children}</View>
@@ -60,6 +62,18 @@ export default props => {
           title="HISTORY"
           icon={HISTORY}
           onPress={() => navigate('HistoryStack')}
+        />
+      </Row>
+      <Row>
+        <Button
+          title="FEEDS"
+          icon={FEEDS}
+          onPress={() => navigate('FeedStack')}
+        />
+        <Button
+          title="STAMPS"
+          icon={STAMPS}
+          onPress={() => navigate('StampStack')}
         />
       </Row>
     </View>

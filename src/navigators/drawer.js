@@ -8,6 +8,8 @@ import SideBar from '../components/SideBar.component'
 import OrderStack from './order.stack'
 import AccountStack from './account.stack'
 import HistoryStack from './history.stack'
+import StampStack from './stamp.stack'
+import FeedStack from './feed.stack'
 
 // screens
 import HomeScreen from '../screens/Home.screen'
@@ -31,6 +33,12 @@ const Drawer = createDrawerNavigator(
       navigationOptions: {
         drawerLockMode: 'locked-closed'
       }
+    },
+    StampStack: {
+      screen: StampStack
+    },
+    FeedStack: {
+      screen: FeedStack
     }
   },
   {
