@@ -118,7 +118,8 @@ const styles = StyleSheet.create({
   menuImage: {
     height: 80,
     width: 80,
-    resizeMode: 'stretch'
+    resizeMode: 'stretch',
+    marginRight: 10
   },
   menuItem: {
     flexDirection: 'row',
