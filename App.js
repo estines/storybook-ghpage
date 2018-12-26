@@ -1,20 +1,43 @@
 import React from 'react'
 import { Provider } from 'react-redux'
+import { createSwitchNavigator } from 'react-navigation'
 
 import store from './src/store'
-// import AuthStack from './src/navigators/auth.stack'
-// import OrderStack from './src/navigators/order.stack'
-// import HistoryStack from './src/navigators/history.stack'
-// import StampStack from './src/navigators/stamp.stack'
-import ProfileScreen from './src/screens/profile/ChooseLocation.screen'
+import AuthStack from './src/navigators/auth.stack'
+import SplashScreen from './src/screens/Splash.screen'
+import Drawer from './src/navigators/drawer'
+
 console.disableYellowBox = true
 
-export default class App extends React.Component {
+class App extends React.Component {
   render () {
     return (
       <Provider store={store}>
-        <ProfileScreen />
+        <Drawer />
       </Provider>
     )
   }
 }
+
+class CheckAuth extends React.Component {
+  componentDidMount = () => {
+    setTimeout(() => {
+      this.props.navigation.navigate('Auth')
+    }, 3000)
+  }
+
+  render () {
+    return <SplashScreen />
+  }
+}
+
+export default createSwitchNavigator(
+  {
+    AuthLoading: CheckAuth,
+    App: App,
+    Auth: AuthStack
+  },
+  {
+    initialRouteName: 'AuthLoading'
+  }
+)

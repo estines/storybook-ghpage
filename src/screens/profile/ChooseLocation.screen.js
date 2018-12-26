@@ -47,12 +47,22 @@ export default class ProfileScreen extends Component {
     }
   }
 
+  back = () => {
+    this.props.navigation.goBack()
+  }
+
   renderMapBody = () => {
     const { location } = this.state
     if (location && location !== null) {
       return (
         <Fragment>
-          <Header left="cancel" right="save" center="Choose location" />
+          <Header
+            left="cancel"
+            right="save"
+            center="Choose location"
+            onPressLeft={this.back}
+            onPressRight={this.back}
+          />
           <Marker coordinate={location}>
             <Image source={CURRENT_POSITION} style={styles.marker} />
           </Marker>
@@ -84,7 +94,6 @@ export default class ProfileScreen extends Component {
             longitudeDelta: 0.0421
           }}
           customMapStyle={mapStyle}
-          con
         >
           {this.renderMapBody()}
         </MapView>

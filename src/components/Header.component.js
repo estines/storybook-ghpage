@@ -1,40 +1,60 @@
 import React from 'react'
-import { View, Text, StyleSheet, Dimensions, SafeAreaView } from 'react-native'
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity
+} from 'react-native'
 import { ifIphoneX } from 'react-native-iphone-x-helper'
 import { MaterialIcons } from '@expo/vector-icons'
 
-const renderLeft = left => {
+const renderLeft = (left, onPress) => {
   if (left === 'back') {
-    return (
-      <View style={styles.left}>
-        <MaterialIcons name="keyboard-arrow-left" size={30} />
-      </View>
-    )
+    return <MaterialIcons name="keyboard-arrow-left" size={30} />
   } else if (left === 'cancel') {
-    return (
-      <View style={styles.left}>
-        <Text style={styles.text}>Cancel</Text>
-      </View>
-    )
+    return <Text style={styles.text}>Cancel</Text>
+  } else if (left === 'more') {
+    return <MaterialIcons name="more-vert" size={30} color="#7E7E7E" />
+  } else if (left === 'close') {
+    return <MaterialIcons name="close" size={30} color="#7E7E7E" />
   }
 }
 
 const renderRight = type => {
   if (type === 'save') {
-    return (
-      <View style={styles.right}>
-        <Text style={styles.text}>Save</Text>
-      </View>
-    )
+    return <Text style={styles.text}>Save</Text>
   }
 }
 export default props => {
-  const { left, right, center } = props
+  const {
+    left,
+    right,
+    center,
+    hasShadow,
+    containerStyle,
+    onPressLeft,
+    onPressRight
+  } = props
   return (
-    <View style={styles.wrapper}>
-      {renderLeft(left)}
+    <View
+      style={[
+        styles.wrapper,
+        containerStyle ? { ...containerStyle } : {},
+        hasShadow ? styles.shadow : {}
+      ]}
+    >
+      <View style={styles.left}>
+        <TouchableOpacity onPress={onPressLeft}>
+          {renderLeft(left, onPressLeft)}
+        </TouchableOpacity>
+      </View>
       <Text style={styles.title}>{center}</Text>
-      {renderRight(right)}
+      <View style={styles.right}>
+        <TouchableOpacity onPress={onPressRight}>
+          {renderRight(right)}
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }
@@ -42,12 +62,19 @@ export default props => {
 const { width: WIDTH } = Dimensions.get('window')
 
 const styles = StyleSheet.create({
+  shadow: {
+    shadowColor: '#E6E6E6',
+    shadowOpacity: 1,
+    shadowRadius: 20,
+    shadowOffset: {
+      width: 0,
+      height: 10
+    }
+  },
   title: {
     fontSize: 18,
     fontWeight: '500'
   },
-  right: {},
-  left: {},
   text: {
     color: '#007AFF',
     fontSize: 18
@@ -59,10 +86,6 @@ const styles = StyleSheet.create({
     paddingTop: ifIphoneX ? 50 : 20,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    right: 0
+    justifyContent: 'space-between'
   }
 })

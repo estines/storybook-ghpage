@@ -19,6 +19,10 @@ export default class LoginScreen extends Component {
     username: '',
     password: ''
   }
+
+  login = () => {
+    this.props.navigation.navigate('App')
+  }
   render () {
     const { navigation } = this.props
     const { username, password } = this.state
@@ -48,6 +52,7 @@ export default class LoginScreen extends Component {
             buttonStyle={styles.button}
             containerStyle={styles.btnContainer}
             titleStyle={styles.btnText}
+            onPress={this.login}
           />
           <View style={styles.br} />
           <Text style={styles.span}>Don’t have an account</Text>

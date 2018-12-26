@@ -1,9 +1,13 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, ScrollView, Text, FlatList } from 'react-native'
-import HeaderImageScrollView from 'react-native-image-header-scroll-view'
+import { View, StyleSheet, ScrollView, Text, FlatList, TouchableOpacity } from 'react-native'
+import HeaderImageScrollView, {
+  TriggeringView
+} from 'react-native-image-header-scroll-view'
 import { connect } from 'react-redux'
 import format from 'date-fns/format'
 import isSameDay from 'date-fns/is_same_day'
+import { MaterialIcons } from '@expo/vector-icons'
+import { ifIphoneX } from 'react-native-iphone-x-helper'
 
 // redux
 import { fetchMenu } from '../../store/actions'
@@ -14,6 +18,7 @@ import HEADER from '../../assets/img/cart-header.png'
 // components
 import HistoryTabHeader from '../../components/HistoryTabHeader.component'
 import HistoryItem from '../../components/HistoryItem.component'
+import Header from '../../components/Header.component'
 
 // services
 import HistoryService from '../../services/history.service'
@@ -71,11 +76,15 @@ class CartScreen extends Component {
   renderHistoryDate = ({ item }) => {
     const date = new Date(item)
     const { histories, paymentType } = this.state
-    const targetHistories = histories.filter(h => h.dateString === item && paymentType === h.paymentType)
+    const targetHistories = histories.filter(
+      h => h.dateString === item && paymentType === h.paymentType
+    )
     let totalPrice = 0
     if (targetHistories.length > 0) {
       if (targetHistories.length > 1) {
-        totalPrice = targetHistories.map(h => parseFloat(h.totalPrice)).reduce((a, b) => a + b)
+        totalPrice = targetHistories
+          .map(h => parseFloat(h.totalPrice))
+          .reduce((a, b) => a + b)
       } else if (targetHistories.length === 1) {
         totalPrice = targetHistories[0].totalPrice
       }
@@ -89,7 +98,9 @@ class CartScreen extends Component {
             <Text style={styles.historyGroupTitle}>
               TODAY, {format(date, 'MMM DD, YYYY')}
             </Text>
-            <Text style={styles.totalPrice}>฿{totalPrice.toLocaleString()}</Text>
+            <Text style={styles.totalPrice}>
+              ฿{totalPrice.toLocaleString()}
+            </Text>
           </View>
           <View style={styles.br} />
           <FlatList
@@ -120,6 +131,10 @@ class CartScreen extends Component {
     )
   }
 
+  back = () => {
+    this.props.navigation.navigate('HomeScreen')
+  }
+
   render () {
     const { paymentType, historyDates } = this.state
     return (
@@ -141,7 +156,12 @@ class CartScreen extends Component {
           ScrollViewComponent={ScrollView}
           renderFixedForeground={() => (
             <View style={styles.foreground}>
-              <Text style={styles.title}>History</Text>
+              <TouchableOpacity style={styles.closeBtn} onPress={this.back}>
+                <MaterialIcons name="close" size={30} color="#FFF" />
+              </TouchableOpacity>
+              <TriggeringView onHide={() => console.log('text hidden')}>
+                <Text style={styles.title}>History</Text>
+              </TriggeringView>
             </View>
           )}
         >
@@ -167,6 +187,12 @@ class CartScreen extends Component {
 }
 
 const styles = StyleSheet.create({
+  closeBtn: {
+    position: 'absolute',
+    top: ifIphoneX ? 40 : 10,
+    left: 0,
+    marginLeft: '5%'
+  },
   totalPrice: {
     color: '#FF3B30'
   },

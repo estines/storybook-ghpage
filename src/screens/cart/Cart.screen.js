@@ -12,6 +12,7 @@ import HeaderImageScrollView from 'react-native-image-header-scroll-view'
 import { connect } from 'react-redux'
 import { Button } from 'react-native-elements'
 import { MaterialIcons } from '@expo/vector-icons'
+import { ifIphoneX } from 'react-native-iphone-x-helper'
 
 // redux
 import { fetchMenu } from '../../store/actions'
@@ -41,6 +42,10 @@ class CartScreen extends Component {
     this.props.navigation.navigate('Menu')
   }
 
+  back = () => {
+    this.props.navigation.navigate('HomeScreen')
+  }
+
   render () {
     const {
       cart: { cart }
@@ -64,6 +69,9 @@ class CartScreen extends Component {
           ScrollViewComponent={ScrollView}
           renderFixedForeground={() => (
             <View style={styles.foreground}>
+              <TouchableOpacity style={styles.closeBtn} onPress={this.back}>
+                <MaterialIcons name="close" size={30} color="#FFF" />
+              </TouchableOpacity>
               <Text style={styles.title}>My Cart</Text>
             </View>
           )}
@@ -108,6 +116,12 @@ class CartScreen extends Component {
 }
 
 const styles = StyleSheet.create({
+  closeBtn: {
+    position: 'absolute',
+    top: ifIphoneX ? 40 : 10,
+    left: 0,
+    marginLeft: '5%'
+  },
   totalGuests: {
     marginLeft: 5
   },

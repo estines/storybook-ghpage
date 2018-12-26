@@ -71,11 +71,12 @@ const AppHeader = props => {
           icon: 'close',
           color: '#000000',
           size: 25,
-          onPress: props.back
+          onPress: props.onPressLeft
         }}
         rightComponent={{
           text: 'Edit',
-          style: { color: '#007AFF', fontSize: 18 }
+          style: { color: '#007AFF', fontSize: 18 },
+          onPress: props.onPressRight
         }}
         containerStyle={{
           backgroundColor: '#FFF',
@@ -115,11 +116,19 @@ export default class ProfileScreen extends Component {
     }
   }
 
+  back = () => {
+    this.props.navigation.navigate('HomeScreen')
+  }
+
+  edit = () => {
+    this.props.navigation.navigate('EditProfile')
+  }
+
   render () {
     const { phoneNumber, email, facebook, address, location } = this.state
     return (
       <View style={styles.screen}>
-        <AppHeader />
+        <AppHeader onPressLeft={this.back} onPressRight={this.edit} />
         <View style={styles.screenHeader}>
           <Text style={styles.screenTitle}>Profile</Text>
         </View>
@@ -201,7 +210,14 @@ const styles = StyleSheet.create({
     height: avatarSize,
     borderRadius: avatarSize / 2,
     borderColor: '#FFF',
-    borderWidth: avatarSize / 20
+    borderWidth: avatarSize / 20,
+    shadowColor: 'gray',
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    shadowOffset: {
+      width: 0,
+      height: 10
+    }
   },
   screenTitle: {
     fontSize: 34,

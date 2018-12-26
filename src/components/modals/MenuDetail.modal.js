@@ -516,7 +516,8 @@ const styles = StyleSheet.create({
   },
   photo: {
     width: '100%',
-    height: 200
+    height: 200,
+    marginRight: 10
   },
   modal: {
     backgroundColor: 'transparent'
