@@ -4,6 +4,10 @@ import Menu from '../screens/menu/Menu.screen'
 import Cart from '../screens/cart/Cart.screen'
 import PaymentMethod from '../screens/payment/PaymentMethod.screen'
 import AddPaymentMethod from '../screens/payment/AddPaymentMethod.screen'
+import ConfirmPayment from '../screens/order/ConfirmPayment.screen'
+import PaymentProcess from '../screens/order/PaymentProcess.screen'
+import ReviewScreen from '../screens/order/Review.screen'
+import FinishReview from '../screens/order/FinishReview.screen'
 
 const screens = {
   Cart: {
@@ -17,6 +21,18 @@ const screens = {
   },
   AddPaymentMethod: {
     screen: AddPaymentMethod
+  },
+  ConfirmPayment: {
+    screen: ConfirmPayment
+  },
+  PaymentProcess: {
+    screen: PaymentProcess
+  },
+  ReviewScreen: {
+    screen: ReviewScreen
+  },
+  FinishReview: {
+    screen: FinishReview
   }
 }
 

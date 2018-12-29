@@ -45,7 +45,11 @@ export default props => {
         onPressLeft={openDrawer}
       />
       <Row>
-        <Button title="SCAN" icon={BARCODE} />
+        <Button
+          title="SCAN"
+          icon={BARCODE}
+          onPress={() => navigate('ScanStack')}
+        />
         <Button
           title="MY CART"
           icon={CART}

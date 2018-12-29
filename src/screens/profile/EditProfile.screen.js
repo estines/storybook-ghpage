@@ -44,7 +44,6 @@ export default class ProfileScreen extends Component {
   }
 
   onSelectImage = data => {
-    console.log(data, 'data...')
     this.setState({
       galleryVisible: false,
       image: data.uri

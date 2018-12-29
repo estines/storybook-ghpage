@@ -13,6 +13,7 @@ import {
 } from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo'
+import PhotoView from '../PhotoView.component'
 
 import LINE from '../../assets/icon/line.png'
 import CLOCK from '../../assets/icon/clock.png'
@@ -249,7 +250,7 @@ export default class MenuDetailModal extends Component {
             style={{ width: '100%', paddingBottom: 100 }}
             showsVerticalScrollIndicator={false}
           >
-            <Image source={{ uri: gallery[0] }} style={styles.photo} />
+            <PhotoView height={250} sources={gallery} />
             <View style={styles.card}>
               <Text style={styles.name}>{name}</Text>
               <Text style={styles.description}>{description}</Text>
@@ -309,7 +310,9 @@ export default class MenuDetailModal extends Component {
                     start={[0, 0]}
                     end={[1, 0]}
                   >
-                    <Text style={styles.totalPrice}>THB {totalPrice.toLocaleString()}</Text>
+                    <Text style={styles.totalPrice}>
+                      THB {totalPrice.toLocaleString()}
+                    </Text>
                     <Text style={styles.addToCart}>ADD TO CART</Text>
                   </LinearGradient>
                 </TouchableOpacity>

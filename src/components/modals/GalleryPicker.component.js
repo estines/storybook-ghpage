@@ -9,7 +9,8 @@ import {
   TouchableOpacity,
   CameraRoll,
   Dimensions,
-  Modal
+  Modal,
+  ImageBackground
 } from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons'
 import { Permissions } from 'expo'
@@ -32,28 +33,46 @@ export default class MenuDetailModal extends Component {
   }
 
   renderPhotos = ({ item }) => {
+    const { selected } = this.props
     const { node } = item
-    const { onSelect } = this.props
-    return (
-      <TouchableOpacity onPress={() => onSelect(node.image)}>
-        <Image source={node.image} style={styles.image} />
-      </TouchableOpacity>
-    )
+    const { onSelect, multiple } = this.props
+    if (multiple) {
+      const index = selected.findIndex(i => i === node.image.uri)
+      return (
+        <TouchableOpacity onPress={() => onSelect(node.image)}>
+          <ImageBackground source={node.image} style={styles.image}>
+            {index > -1 ? (
+              <View style={[styles.marker, styles.selectedMarker]}>
+                <Text style={styles.index}>{index + 1}</Text>
+              </View>
+            ) : (
+              <View style={styles.marker} />
+            )}
+          </ImageBackground>
+        </TouchableOpacity>
+      )
+    } else {
+      return (
+        <TouchableOpacity onPress={() => onSelect(node.image)}>
+          <ImageBackground source={node.image} style={styles.image} />
+        </TouchableOpacity>
+      )
+    }
   }
 
   render () {
     const { photos } = this.state
-    const { visible } = this.props
+    const { visible, onClose } = this.props
     return (
       <Modal visible={visible} animationType="slide">
         <View style={styles.wrapper}>
-          <TouchableOpacity style={styles.top}>
+          <TouchableOpacity style={styles.top} onPress={onClose}>
             <SafeAreaView>
               <Image source={LINE} />
             </SafeAreaView>
             <View style={styles.br} />
             <View style={styles.textRow}>
-              <Text style={styles.title}>Menu Detail</Text>
+              <Text style={styles.title}>Gallery</Text>
               <MaterialIcons
                 name="keyboard-arrow-down"
                 size={18}
@@ -83,6 +102,25 @@ const { width: WIDTH } = Dimensions.get('window')
 const imageSize = WIDTH / 3 - 1
 
 const styles = StyleSheet.create({
+  selectedMarker: {
+    backgroundColor: '#E45655'
+  },
+  index: {
+    color: '#FFF',
+    fontWeight: 'bold',
+    fontSize: 10
+  },
+  marker: {
+    height: 20,
+    width: 20,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.6)',
+    borderWidth: 2,
+    borderColor: '#FFF',
+    margin: 5,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   row: {
     backgroundColor: '#FFF',
     justifyContent: 'space-around',

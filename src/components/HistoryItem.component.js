@@ -113,6 +113,7 @@ const styles = StyleSheet.create({
   wrapper: {
     backgroundColor: '#FFF',
     padding: 10,
+    paddingHorizontal: '5%',
     borderBottomWidth: 1,
     borderColor: '#dbdbdb'
   }

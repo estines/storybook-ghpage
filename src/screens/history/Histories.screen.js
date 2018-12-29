@@ -1,5 +1,12 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, ScrollView, Text, FlatList, TouchableOpacity } from 'react-native'
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Text,
+  FlatList,
+  TouchableOpacity
+} from 'react-native'
 import HeaderImageScrollView, {
   TriggeringView
 } from 'react-native-image-header-scroll-view'
@@ -13,7 +20,7 @@ import { ifIphoneX } from 'react-native-iphone-x-helper'
 import { fetchMenu } from '../../store/actions'
 
 // assets
-import HEADER from '../../assets/img/cart-header.png'
+import HEADER from '../../assets/img/history-bg.png'
 
 // components
 import HistoryTabHeader from '../../components/HistoryTabHeader.component'
@@ -197,13 +204,13 @@ const styles = StyleSheet.create({
     color: '#FF3B30'
   },
   historyGroupHeader: {
-    paddingHorizontal: 10,
+    paddingHorizontal: '5%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center'
   },
   historyGroup: {
-    paddingVertical: 5,
+    paddingVertical: '5%',
     marginTop: 10
   },
   title: {

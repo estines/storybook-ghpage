@@ -10,6 +10,7 @@ import AccountStack from './account.stack'
 import HistoryStack from './history.stack'
 import StampStack from './stamp.stack'
 import FeedStack from './feed.stack'
+import ScanStack from './scan.stack'
 
 // screens
 import HomeScreen from '../screens/Home.screen'
@@ -39,6 +40,9 @@ const Drawer = createDrawerNavigator(
     },
     FeedStack: {
       screen: FeedStack
+    },
+    ScanStack: {
+      screen: ScanStack
     }
   },
   {

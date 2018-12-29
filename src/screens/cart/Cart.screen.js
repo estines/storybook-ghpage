@@ -107,6 +107,7 @@ class CartScreen extends Component {
               title="MAKE A PAYMENT"
               buttonStyle={styles.submitBtn}
               titleStyle={styles.submitBtnTitle}
+              onPress={() => this.props.navigation.navigate('ConfirmPayment')}
             />
           </View>
         </SafeAreaView>

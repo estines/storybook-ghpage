@@ -7,6 +7,8 @@ import AuthStack from './src/navigators/auth.stack'
 import SplashScreen from './src/screens/Splash.screen'
 import Drawer from './src/navigators/drawer'
 
+import ScanScreen from './src/screens/order/Review.screen'
+
 console.disableYellowBox = true
 
 class App extends React.Component {
@@ -31,6 +33,8 @@ class CheckAuth extends React.Component {
   }
 }
 
+// export default ScanScreen
+
 export default createSwitchNavigator(
   {
     AuthLoading: CheckAuth,
@@ -38,6 +42,6 @@ export default createSwitchNavigator(
     Auth: AuthStack
   },
   {
-    initialRouteName: 'App'
+    initialRouteName: 'AuthLoading'
   }
 )
