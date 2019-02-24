@@ -15,7 +15,7 @@ import { MaterialIcons } from '@expo/vector-icons'
 import { ifIphoneX } from 'react-native-iphone-x-helper'
 
 // redux
-import { fetchMenu } from '../../store/actions'
+import { fetchCategory } from '../../store/actions'
 
 // assets
 import HEADER from '../../assets/img/cart-header.png'
@@ -28,10 +28,26 @@ import CardItemCard from '../../components/CardItemCard.component'
 import CartSummary from '../../components/CartSummary.component'
 
 class CartScreen extends Component {
+  state = {
+    time: new Date()
+  }
+
   async componentDidMount () {
     try {
+      // clock
+      setInterval(() => {
+        this.setState({
+          time: new Date()
+        })
+      }, 1000)
+
       this.setState({ loading: true })
-      await this.props.fetchMenu()
+      const {
+        cart: {
+          restaurant: { id }
+        }
+      } = this.props
+      await this.props.fetchCategory(id)
       this.setState({ loading: false })
     } catch (error) {
       this.setState({ loading: false })
@@ -48,8 +64,9 @@ class CartScreen extends Component {
 
   render () {
     const {
-      cart: { cart }
+      cart: { cart, table, restaurant }
     } = this.props
+    const { time } = this.state
     return (
       <View style={styles.screen}>
         <HeaderImageScrollView
@@ -77,7 +94,12 @@ class CartScreen extends Component {
           )}
         >
           <View style={styles.container}>
-            <TableCard cart={cart} />
+            <TableCard
+              time={time}
+              cart={cart}
+              table={table}
+              restaurant={restaurant}
+            />
             <View style={styles.br} />
             <CardItemCard add={this.showMenu} cart={cart} />
             <CartSummary cart={cart} />
@@ -195,7 +217,8 @@ const mapState = state => {
     cart
   }
 }
+
 export default connect(
   mapState,
-  { fetchMenu }
+  { fetchCategory }
 )(CartScreen)

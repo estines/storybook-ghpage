@@ -6,27 +6,30 @@ import {
   Image,
   ScrollView,
   Dimensions,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert
 } from 'react-native'
 import { TextField } from 'react-native-material-textfield'
+import { connect } from 'react-redux'
 
 // components
 import Header from '../../components/Header.component'
 import ImageSource from '../../components/modals/ImageSource.modal'
 import GalleryPicker from '../../components/modals/GalleryPicker.component'
+import Spinner from '../../components/Spinner.component'
+
+// services
+import { fetchProfile, onProfileFormChange } from '../../store/actions'
+import AuthService from '../../services/auth.service'
+import ImageService from '../../services/image.service'
 
 const ED_SHEERAN = 'https://ichef.bbci.co.uk/images/ic/960x540/p02kq8k6.jpg'
 
-export default class ProfileScreen extends Component {
+class EditProfileScreen extends Component {
   state = {
-    phoneNumber: '+123 456 789 234',
-    email: 'Shawneat@mail.com',
-    facebook: 'Shawn Mentos Facebook',
-    address: '497 Sukhumvit road, Silom',
-    bio: 'Literally born to eat burgers Bangkok based.',
     imageSourceVisible: false,
     galleryVisible: false,
-    image: ED_SHEERAN
+    loading: false
   }
 
   showGallery = () => {
@@ -44,10 +47,12 @@ export default class ProfileScreen extends Component {
   }
 
   onSelectImage = data => {
+    console.log(data, 'data.uri...')
     this.setState({
       galleryVisible: false,
-      image: data.uri
+      file: data
     })
+    this.props.onProfileFormChange({ image: data.uri })
   }
 
   removeImage = () => {
@@ -58,6 +63,7 @@ export default class ProfileScreen extends Component {
   }
 
   back = () => {
+    this.props.fetchProfile()
     this.props.navigation.goBack()
   }
 
@@ -65,22 +71,74 @@ export default class ProfileScreen extends Component {
     this.props.navigation.navigate('ChooseLocation')
   }
 
+  save = async () => {
+    try {
+      this.setState({ loading: true })
+      let {
+        phoneNumber,
+        email,
+        bio,
+        address,
+        image,
+        name,
+        location
+      } = this.props
+
+      // check image is local
+      console.log(image, 'image...')
+      if (image && image.includes('assets-library')) {
+        const { file } = this.state
+        const urls = await ImageService.upload([file])
+        image = urls[0]
+      }
+
+      await AuthService.updateProfile({
+        phoneNumber,
+        email,
+        bio,
+        address,
+        image,
+        name,
+        location
+      })
+      this.setState({ loading: false })
+      this.back()
+      setTimeout(() => {
+        Alert.alert('Profile Updated.')
+      }, 500)
+    } catch (error) {
+      this.setState({ loading: false })
+      console.log(error.response, 'error...')
+      setTimeout(() => {
+        const err = error.response ? error.response.data : error
+        Alert.alert('Error', err.message)
+      }, 500)
+    }
+  }
+
   render () {
+    const { imageSourceVisible, galleryVisible, loading } = this.state
     const {
       phoneNumber,
       email,
       bio,
       address,
       image,
-      imageSourceVisible,
-      galleryVisible
-    } = this.state
-
+      name,
+      onProfileFormChange
+    } = this.props
     const options = [
       { title: 'New Profile Photo', onPress: this.showGallery },
       { title: 'Import from Facebook', onPress: () => ({}) },
       { title: 'Remove Profile Photo', onPress: this.removeImage }
     ]
+    let imgUrl = image
+    if (image && image !== null) {
+      console.log(image, 'image...')
+      if (!image.includes('assets-library')) {
+        imgUrl = `https://orderking.s3.amazonaws.com/images/thumbnail/${image}`
+      }
+    }
 
     return (
       <ScrollView style={styles.screen} scrollEnabled={false}>
@@ -90,10 +148,13 @@ export default class ProfileScreen extends Component {
           right="save"
           hasShadow
           onPressLeft={this.back}
-          onPressRight={this.back}
+          onPressRight={this.save}
         />
         <View style={styles.container}>
-          <Image source={{ uri: image }} style={[styles.avatar]} />
+          <Image
+            source={{ uri: image && image !== null ? imgUrl : ED_SHEERAN }}
+            style={[styles.avatar]}
+          />
           <View style={styles.br} />
           <View style={styles.br} />
           <TouchableOpacity onPress={this.toggleImageSource}>
@@ -101,32 +162,32 @@ export default class ProfileScreen extends Component {
           </TouchableOpacity>
           <View style={styles.br} />
           <TextField
-            value={phoneNumber}
-            onChangeText={phoneNumber => this.setState({ phoneNumber })}
+            value={name}
+            onChangeText={name => onProfileFormChange({ name })}
             label="Name"
             containerStyle={styles.input}
           />
           <TextField
             value={bio}
-            onChangeText={bio => this.setState({ bio })}
+            onChangeText={bio => onProfileFormChange({ bio })}
             label="Bio"
             containerStyle={styles.input}
           />
           <TextField
             value={phoneNumber}
-            onChangeText={phoneNumber => this.setState({ phoneNumber })}
+            onChangeText={phoneNumber => onProfileFormChange({ phoneNumber })}
             label="Phone Number"
             containerStyle={styles.input}
           />
           <TextField
             value={email}
-            onChangeText={email => this.setState({ email })}
+            onChangeText={email => onProfileFormChange({ email })}
             label="Email"
             containerStyle={styles.input}
           />
           <TextField
             value={address}
-            onChangeText={address => this.setState({ address })}
+            onChangeText={address => onProfileFormChange({ address })}
             label="Address"
             containerStyle={styles.input}
             onFocus={this.showMap}
@@ -143,10 +204,18 @@ export default class ProfileScreen extends Component {
           visible={galleryVisible}
           onSelect={this.onSelectImage}
         />
+        <Spinner visible={loading} />
       </ScrollView>
     )
   }
 }
+
+const mapState = state => state.profile
+
+export default connect(
+  mapState,
+  { fetchProfile, onProfileFormChange }
+)(EditProfileScreen)
 
 const { width: WIDTH } = Dimensions.get('window')
 

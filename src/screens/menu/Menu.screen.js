@@ -21,21 +21,12 @@ import { addToCart } from '../../store/actions/index'
 // assets
 import HEADER from '../../assets/img/menu-bg.png'
 import BAHT_SYMBOL_GROUP from '../../assets/img/bath-symbol-group.png'
+import EMPTY_MENU from '../../assets/icon/empty-cart.png'
 
 // components
 import CategoryCard from '../../components/CategoryCard.component'
 import SearchMenu from '../../components/SearchMenu.component'
 import MenuDetail from '../../components/modals/MenuDetail.modal'
-
-const CATEGORIES = [
-  {
-    icon: require('../../assets/icon/most-popular.png'),
-    title: 'Most Popular'
-  },
-  { icon: require('../../assets/icon/noodles.png'), title: 'Noodles' },
-  { icon: require('../../assets/icon/rice.png'), title: 'Rice' },
-  { icon: require('../../assets/icon/drinks.png'), title: 'Drinks' }
-]
 
 const ScreenHeader = props => {
   return (
@@ -72,15 +63,19 @@ class MenuScreen extends Component {
 
   renderCategory = ({ item }) => {
     const { cart } = this.state
-    const { menu } = this.props
-    return (
-      <CategoryCard
-        data={item}
-        cart={cart}
-        menu={menu}
-        addToCart={this.addToCart}
-      />
-    )
+    const {
+      menu: { menu }
+    } = this.props
+    if (item && item.menus.length > 0) {
+      return (
+        <CategoryCard
+          data={item}
+          cart={cart}
+          menu={menu}
+          addToCart={this.addToCart}
+        />
+      )
+    }
   }
 
   addToCart = async (menu, type) => {
@@ -138,9 +133,20 @@ class MenuScreen extends Component {
     this.props.navigation.goBack()
   }
 
+  fetchCategories = async () => {
+    this.setState({ loading: true })
+    await this.props.fetchCategories()
+    this.setState({ loading: false })
+  }
+
   render () {
-    const { detailVisible, focusMenu } = this.state
-    const { menu } = this.props
+    const { detailVisible, focusMenu, loading } = this.state
+    const {
+      menu: { categories },
+      cart: {
+        restaurant: { name: restaurantName, aboutUs: restaurantDescription }
+      }
+    } = this.props
     return (
       <View style={styles.screen}>
         <HeaderImageScrollView
@@ -160,22 +166,33 @@ class MenuScreen extends Component {
           <View style={styles.container}>
             <View style={[styles.card, styles.restaurantCard]}>
               <View style={styles.col}>
-                <Text style={styles.title}>Ada Ramen</Text>
-                <Text style={styles.subTitle}>Japanese Restaurant</Text>
+                <Text style={styles.title}>{restaurantName}</Text>
+                <Text style={styles.subTitle}>{restaurantDescription}</Text>
               </View>
               <Image source={BAHT_SYMBOL_GROUP} style={styles.bahtSymbol} />
             </View>
             <View style={styles.br} />
             <SearchMenu />
-            <FlatList
-              data={CATEGORIES}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={this.renderCategory}
-              extraData={menu}
-              scrollEnabled={false}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 150 }}
-            />
+            {categories.length > 0 ? (
+              <View style={styles.container}>
+                <FlatList
+                  data={categories}
+                  keyExtractor={(item, index) => index.toString()}
+                  extraData={this.state}
+                  renderItem={this.renderCategory}
+                  style={{ height: '100%', width: '100%' }}
+                  contentContainerStyle={{ paddingBottom: 100 }}
+                  showsVerticalScrollIndicator={false}
+                />
+              </View>
+            ) : (
+              <View style={styles.container}>
+                <Image source={EMPTY_MENU} />
+                <Text style={styles.emptyTitle}>
+                  You haven’t added any item
+                </Text>
+              </View>
+            )}
           </View>
         </HeaderImageScrollView>
         <View style={styles.submitButtonWrapper}>
@@ -285,7 +302,9 @@ const styles = StyleSheet.create({
 })
 
 const mapState = state => {
-  return state.menu
+  return {
+    ...state
+  }
 }
 
 export default connect(

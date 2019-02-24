@@ -2,13 +2,32 @@ import React, { Component } from 'react'
 import { View, StyleSheet, Text, Image } from 'react-native'
 import { Button } from 'react-native-elements'
 import { StackActions, NavigationActions } from 'react-navigation'
+import format from 'date-fns/format'
+import { connect } from 'react-redux'
+
+import { checkIn } from '../../store/actions'
 
 // components
 import Header from '../../components/Header.component'
 
 // assets
 import SCAN from '../../assets/img/circle-qr.png'
-export default class ScanScreen extends Component {
+class ScanResultScreen extends Component {
+  state = {
+    tableData: {
+      restaurant: {
+        name: ''
+      },
+      name: ''
+    }
+  }
+  componentDidMount = () => {
+    const { tableData } = this.props.navigation.state.params
+    this.setState({
+      tableData
+    })
+  }
+
   back = () => {
     this.props.navigation.goBack()
   }
@@ -18,21 +37,33 @@ export default class ScanScreen extends Component {
       index: 0,
       actions: [NavigationActions.navigate({ routeName: 'Scan' })]
     })
+    const { tableData } = this.state
+    const { restaurant } = tableData
+    delete tableData.restaurant
+    const x = {restaurant, table: tableData}
+    console.log(JSON.stringify(x))
+    this.props.checkIn({ restaurant, table: tableData })
     this.props.navigation.dispatch(resetAction)
     this.props.navigation.navigate('Cart')
   }
 
   render () {
+    const {
+      name,
+      restaurant: { name: restaurantName }
+    } = this.state.tableData
     return (
       <View style={styles.screen}>
         <Header left="back" onPressLeft={this.back} />
         <View style={styles.container}>
           <View style={styles.card}>
             <Text style={styles.title}>Welcome to</Text>
-            <Text style={styles.title}>Ada Ramen</Text>
+            <Text style={styles.title}>{restaurantName}</Text>
             <Image source={SCAN} style={styles.scanImage} />
-            <Text style={styles.subTitle}>Table A 141</Text>
-            <Text style={styles.date}>Date/ Time: 12.11.2018 / 12:30</Text>
+            <Text style={styles.subTitle}>Table {name}</Text>
+            <Text style={styles.date}>
+              Date/ Time: {format(new Date(), 'DD/MM/YYYY / HH:mm')}
+            </Text>
             <Button
               title="Next"
               buttonStyle={styles.button}
@@ -44,6 +75,11 @@ export default class ScanScreen extends Component {
     )
   }
 }
+
+export default connect(
+  null,
+  { checkIn }
+)(ScanResultScreen)
 
 const styles = StyleSheet.create({
   date: {},

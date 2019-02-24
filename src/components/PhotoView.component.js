@@ -42,6 +42,7 @@ export default class PhotoView extends Component {
 
   getPagedPhotoView () {
     return this.sources.map((url, index) => {
+      const uri = `https://orderking.s3.amazonaws.com/images/thumbnail/${url}`
       return (
         <TouchableWithoutFeedback
           key={index}
@@ -50,7 +51,7 @@ export default class PhotoView extends Component {
           <View style={{ width: WIDTH, height: this.props.height }}>
             <Image
               style={{ height: this.props.height }}
-              source={{ uri: url }}
+              source={{ uri }}
               resizeMode={'cover'}
             />
           </View>
@@ -139,8 +140,16 @@ export default class PhotoView extends Component {
 
   render () {
     const { targetImage } = this.state
-    const images = this.props.sources.map(s => ({ source: {uri: s}, width: WIDTH, resizeMode: 'contain' }))
-    console.log(images, 'images...')
+    const images = this.props.sources.map(s => ({
+      source: {
+        uri: `https://orderking.s3.amazonaws.com/images/thumbnail/${s}`
+      },
+      width: WIDTH,
+      resizeMode: 'contain'
+    }))
+
+    console.log(images, 'images edited')
+
     return (
       <View>
         <ScrollView
@@ -216,23 +225,3 @@ PhotoView.defaultProps = {
   styleIndicatorHeight: 10,
   styleIndicatorWidth: 10
 }
-
-// PhotoView.propTypes = {
-//   modalHeader: React.PropTypes.string,
-//   modalHeaderClose: React.PropTypes.string,
-//   modalImageGap: React.PropTypes.number,
-//   sources: React.PropTypes.array,
-//   styleModalHeaderClose: React.PropTypes.object,
-//   styleModalHeader: React.PropTypes.object,
-//   styleBackgroundColor: React.PropTypes.string,
-//   styleIndicatorBoardHeight: React.PropTypes.number,
-//   styleIndicatorBoardBackgroundColor: React.PropTypes.string,
-//   styleIndicatorBorderColor: React.PropTypes.string,
-//   styleIndicatorBorderWidth: React.PropTypes.number,
-//   styleIndicatorBorderRadius: React.PropTypes.number,
-//   styleIndicatorColor: React.PropTypes.string,
-//   styleIndicatorColorSelected: React.PropTypes.string,
-//   styleIndicatorGap: React.PropTypes.number,
-//   styleIndicatorHeight: React.PropTypes.number,
-//   styleIndicatorWidth: React.PropTypes.number
-// }

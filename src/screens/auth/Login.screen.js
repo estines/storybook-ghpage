@@ -5,7 +5,8 @@ import {
   Text,
   Image,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert
 } from 'react-native'
 import { Button } from 'react-native-elements'
 
@@ -13,19 +14,37 @@ import LOGO from '../../assets/img/logo.png'
 
 // components
 import AuthInput from '../../components/AuthInput.component'
+import Spinner from '../../components/Spinner.component'
+
+// services
+import AuthService from '../../services/auth.service'
 
 export default class LoginScreen extends Component {
   state = {
     username: '',
-    password: ''
+    password: '',
+    loading: false
   }
 
-  login = () => {
-    this.props.navigation.navigate('App')
+  login = async () => {
+    try {
+      const { username, password } = this.state
+      this.setState({ loading: true })
+      await AuthService.login(username, password)
+      this.setState({ loading: false })
+      this.props.navigation.navigate('App')
+    } catch (error) {
+      this.setState({ loading: false })
+      setTimeout(() => {
+        const err = error.response ? error.response.data : error
+        Alert.alert('Error', err.message)
+      }, 500)
+    }
   }
+
   render () {
     const { navigation } = this.props
-    const { username, password } = this.state
+    const { username, password, loading } = this.state
     return (
       <ScrollView contentContainerStyle={{ flex: 1 }}>
         <View style={styles.screen}>
@@ -60,6 +79,7 @@ export default class LoginScreen extends Component {
             <Text style={styles.link}>Sign Up Now</Text>
           </TouchableOpacity>
         </View>
+        <Spinner visible={loading} />
       </ScrollView>
     )
   }

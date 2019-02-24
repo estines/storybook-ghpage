@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, Text, Image } from 'react-native'
+import { View, StyleSheet, Text, Image, Alert } from 'react-native'
 import { Button } from 'react-native-elements'
 import { Permissions } from 'expo'
 // components
@@ -8,6 +8,10 @@ import ScanModal from '../../components/modals/Scan.modal'
 
 // assets
 import SCAN from '../../assets/img/scan-gif.gif'
+
+// services
+import TableService from '../../services/table.service'
+
 export default class ScanScreen extends Component {
   state = {
     scannerVisible: false
@@ -35,6 +39,18 @@ export default class ScanScreen extends Component {
     this.props.navigation.navigate('ScanResult')
   }
 
+  testScan = async () => {
+    try {
+      const dataString = '5c69a272bd9dc638b568280a'
+      const tableData = await TableService.get(dataString)
+      if (tableData && tableData.id) {
+        this.props.navigation.navigate('ScanResult', { tableData })
+      }
+    } catch (error) {
+      Alert.alert('Error', error.message)
+    }
+  }
+
   render () {
     const { scannerVisible } = this.state
     return (
@@ -50,9 +66,18 @@ export default class ScanScreen extends Component {
               buttonStyle={styles.button}
               onPress={this.toggleScanner}
             />
+            <Button
+              title="Test Scan Code"
+              buttonStyle={styles.button}
+              onPress={this.testScan}
+            />
           </View>
         </View>
-        <ScanModal visible={scannerVisible} onClose={this.toggleScanner} onRead={this.onRead} />
+        <ScanModal
+          visible={scannerVisible}
+          onClose={this.toggleScanner}
+          onRead={this.onRead}
+        />
       </View>
     )
   }

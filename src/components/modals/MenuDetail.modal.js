@@ -33,9 +33,13 @@ export default class MenuDetailModal extends Component {
 
   selectOption = async (groupId, optionId) => {
     let { selectedOptions } = this.state
-    const targetGroup = await selectedOptions.find(s => s.groupId === groupId)
-    if (targetGroup && targetGroup.groupId) {
-      selectedOptions = await selectedOptions.filter(s => s.groupId !== groupId)
+    if (selectedOptions.length > 0) {
+      const targetGroup = await selectedOptions.find(s => s.groupId === groupId)
+      if (targetGroup && targetGroup.groupId) {
+        selectedOptions = await selectedOptions.filter(
+          s => s.groupId !== groupId
+        )
+      }
     }
     selectedOptions.push({ groupId, optionId })
     this.setState({
@@ -107,7 +111,9 @@ export default class MenuDetailModal extends Component {
   }
 
   renderMainOption = ({ item }) => {
-    const { name, required, options, multiple, id } = item
+    const { name, optionType, choices, id } = item
+    const required = optionType === 'REQUIRED'
+    const multiple = !required
     return (
       <View style={styles.mainOption}>
         <View style={[styles.textRow, { justifyContent: 'space-between' }]}>
@@ -121,7 +127,7 @@ export default class MenuDetailModal extends Component {
         <View style={styles.br} />
         <View style={styles.optionCard}>
           <FlatList
-            data={options}
+            data={choices}
             keyExtractor={(item, index) => (index + 100).toString()}
             renderItem={data => this.renderOption(data, multiple, id)}
             style={{ width: '100%' }}
@@ -145,7 +151,7 @@ export default class MenuDetailModal extends Component {
           for (let optionId of optionIds) {
             const targetGroup = options.find(o => o.id === groupId)
             if (targetGroup && targetGroup.id) {
-              const targetOption = targetGroup.options.find(
+              const targetOption = targetGroup.choices.find(
                 g => g.id === optionId
               )
               if (targetOption && targetOption.price) {
@@ -157,7 +163,7 @@ export default class MenuDetailModal extends Component {
           const { groupId, optionId } = selectedOption
           const targetGroup = options.find(o => o.id === groupId)
           if (targetGroup && targetGroup.id) {
-            const targetOption = targetGroup.options.find(
+            const targetOption = targetGroup.choices.find(
               g => g.id === optionId
             )
             if (targetOption && targetOption.price) {
@@ -184,7 +190,7 @@ export default class MenuDetailModal extends Component {
           for (let optionId of optionIds) {
             const targetGroup = await options.find(o => o.id === groupId)
             if (targetGroup && targetGroup.id) {
-              const targetOption = await targetGroup.options.find(
+              const targetOption = await targetGroup.choices.find(
                 g => g.id === optionId
               )
               if (targetOption && targetOption.price) {
@@ -196,7 +202,7 @@ export default class MenuDetailModal extends Component {
           const { groupId, optionId } = selectedOption
           const targetGroup = await options.find(o => o.id === groupId)
           if (targetGroup && targetGroup.id) {
-            const targetOption = await targetGroup.options.find(
+            const targetOption = await targetGroup.choices.find(
               g => g.id === optionId
             )
             if (targetOption && targetOption.price) {
@@ -226,7 +232,7 @@ export default class MenuDetailModal extends Component {
     const { data, onClose } = this.props
     if (data && data !== null) {
       const { quantity, note } = this.state
-      const { gallery, name, description, estimated_time, options } = data
+      const { images, name, description, estimated_time, options } = data
       const totalPrice = this.calTotalPrice()
       return (
         <View style={styles.wrapper}>
@@ -250,7 +256,7 @@ export default class MenuDetailModal extends Component {
             style={{ width: '100%', paddingBottom: 100 }}
             showsVerticalScrollIndicator={false}
           >
-            <PhotoView height={250} sources={gallery} />
+            <PhotoView height={250} sources={images} />
             <View style={styles.card}>
               <Text style={styles.name}>{name}</Text>
               <Text style={styles.description}>{description}</Text>
@@ -334,7 +340,7 @@ export default class MenuDetailModal extends Component {
         const { groupId, optionIds, optionId } = selectedOption
         if (optionIds) {
           const targetOptions = await options.find(o => o.id === groupId)
-          const { options: subOptions } = targetOptions
+          const { choices: subOptions } = targetOptions
           const targetSubOptions = await subOptions.filter(o =>
             optionIds.includes(o.id)
           )
@@ -342,7 +348,7 @@ export default class MenuDetailModal extends Component {
           optionsName = [...optionsName, ...targetSubOptionsName]
         } else {
           const targetOptions = await options.find(o => o.id === groupId)
-          const { options: subOptions } = targetOptions
+          const { choices: subOptions } = targetOptions
           const targetSubOptions = await subOptions.find(o => o.id === optionId)
           optionsName = [...optionsName, targetSubOptions.name]
         }
@@ -360,7 +366,7 @@ export default class MenuDetailModal extends Component {
       data: { id, name }
     } = this.props
     const optionsName = await this.getOptionsName(selectedOptions)
-    this.props.submit({
+    const body = {
       id: Date.now(),
       productId: id,
       productName: name,
@@ -369,7 +375,8 @@ export default class MenuDetailModal extends Component {
       quantity,
       totalPrice,
       note
-    })
+    }
+    this.props.submit(body)
     this.setState({
       selectedOptions: [],
       quantity: 1

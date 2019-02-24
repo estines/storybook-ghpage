@@ -10,7 +10,9 @@ import {
 import { MapView, LinearGradient, Permissions, Location } from 'expo'
 import { Header } from 'react-native-elements'
 import { ifIphoneX } from 'react-native-iphone-x-helper'
+import { connect } from 'react-redux'
 
+import { fetchProfile } from '../../store/actions'
 // assets
 import PHONE from '../../assets/icon/phone.png'
 import MAIL from '../../assets/icon/mail.png'
@@ -90,7 +92,7 @@ const AppHeader = props => {
   )
 }
 
-export default class ProfileScreen extends Component {
+class ProfileScreen extends Component {
   state = {
     phoneNumber: '+123 456 789 234',
     email: 'Shawneat@mail.com',
@@ -100,6 +102,7 @@ export default class ProfileScreen extends Component {
 
   componentDidMount () {
     this.getLocationAsync()
+    this.props.fetchProfile()
   }
 
   getLocationAsync = async () => {
@@ -125,7 +128,8 @@ export default class ProfileScreen extends Component {
   }
 
   render () {
-    const { phoneNumber, email, facebook, address, location } = this.state
+    const { phoneNumber, email, facebook, address, location, name, image } = this.props
+    let imgUrl = `https://orderking.s3.amazonaws.com/images/thumbnail/${image}`
     return (
       <View style={styles.screen}>
         <AppHeader onPressLeft={this.back} onPressRight={this.edit} />
@@ -158,10 +162,10 @@ export default class ProfileScreen extends Component {
               start={[0, 0]}
               end={[1, 1]}
             >
-              <Image source={{ uri: ED_SHEERAN }} style={[styles.avatar]} />
+              <Image source={{ uri: image && image !== null ? imgUrl : ED_SHEERAN }} style={[styles.avatar]} />
             </LinearGradient>
             <View style={styles.br} />
-            <Text style={styles.name}>Shawn Mentos</Text>
+            <Text style={styles.name}>{name}</Text>
             <View style={styles.br} />
             <ListItem
               icon={PHONE}
@@ -177,6 +181,13 @@ export default class ProfileScreen extends Component {
     )
   }
 }
+
+const mapState = state => state.profile
+
+export default connect(
+  mapState,
+  { fetchProfile }
+)(ProfileScreen)
 
 const { width: WIDTH } = Dimensions.get('window')
 

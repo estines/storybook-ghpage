@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
+import format from 'date-fns/format'
 
 // images
 import QR_CODE_SCAN from '../assets/icon/qr-code-scan.png'
@@ -24,7 +25,7 @@ const parseSatang = value => {
 }
 
 export default props => {
-  const { cart } = props
+  const { cart, table, restaurant, time } = props
   let totalPrice = 0
   if (cart && cart.length > 1) {
     totalPrice = cart.map(c => c.totalPrice).reduce((a, b) => a + b)
@@ -37,14 +38,14 @@ export default props => {
     <View style={styles.card}>
       <View style={styles.content}>
         <View style={styles.textRow}>
-          <Text style={styles.title}>Table 4</Text>
+          <Text style={styles.title}>Table {table.name || ''}</Text>
           <Image source={QR_CODE_SCAN} style={styles.qrScanIcon} />
         </View>
         <View style={styles.br} />
         <View style={styles.br} />
         <View style={[styles.textRow, styles.placeRow]}>
           <Image source={PLACE} style={styles.placeIcon} />
-          <Text style={styles.label}>Ada Ramen - Wattana, Bangkok 12345</Text>
+          <Text style={styles.label}>{restaurant.name || ''}</Text>
         </View>
       </View>
       <View style={styles.br} />
@@ -55,7 +56,7 @@ export default props => {
           <View style={styles.br} />
           <View style={styles.textRow}>
             <Image source={CLOCK} style={styles.clockIcon} />
-            <Text style={styles.value}>00:05</Text>
+            <Text style={styles.value}>{format(time || new Date(), 'HH:mm')}</Text>
           </View>
         </View>
         <View style={styles.textBlock}>
