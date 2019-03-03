@@ -70,13 +70,6 @@ class ChooseLocation extends Component {
     if (location && location !== null) {
       return (
         <Fragment>
-          <Header
-            left="cancel"
-            right="save"
-            center="Choose location"
-            onPressLeft={this.back}
-            onPressRight={this.save}
-          />
           <Marker coordinate={location}>
             <Image source={CURRENT_POSITION} style={styles.marker} />
           </Marker>
@@ -133,6 +126,13 @@ class ChooseLocation extends Component {
     const { location, region } = this.state
     return (
       <View style={styles.screen}>
+        <Header
+          left="cancel"
+          right="save"
+          center="Choose location"
+          onPressLeft={this.back}
+          onPressRight={this.save}
+        />
         <MapView
           style={styles.mapView}
           provider={PROVIDER_GOOGLE}

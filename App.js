@@ -1,7 +1,7 @@
 import React from 'react'
 import { AsyncStorage } from 'react-native'
 import { Provider } from 'react-redux'
-import { createSwitchNavigator } from 'react-navigation'
+import { createSwitchNavigator, createAppContainer } from 'react-navigation'
 import axios from 'axios'
 
 import store from './src/store'
@@ -11,15 +11,31 @@ import Drawer from './src/navigators/drawer'
 
 // import ScanScreen from './src/screens/order/Review.screen'
 
-axios.defaults.baseURL = 'http://192.168.42.84:3000/api'
+axios.defaults.baseURL = 'http://192.168.42.244:3000/api'
 
 console.disableYellowBox = true
 
+const AppContainer = createAppContainer(Drawer)
 class App extends React.Component {
+  handleNavigationChange = data => {
+    this.checkAuth()
+  }
+
+  checkAuth = async () => {
+    const accessToken = await AsyncStorage.getItem('access_token')
+    if (accessToken && accessToken !== null) {
+    } else {
+      this.props.navigation.navigate('Auth')
+    }
+  }
+
   render () {
     return (
       <Provider store={store}>
-        <Drawer />
+        <AppContainer
+          onNavigationStateChange={this.handleNavigationChange}
+          uriPrefix="/app"
+        />
       </Provider>
     )
   }
@@ -31,7 +47,6 @@ class CheckAuth extends React.Component {
   }
 
   checkAuth = async () => {
-    // await AsyncStorage.removeItem('access_token')
     const accessToken = await AsyncStorage.getItem('access_token')
     if (accessToken && accessToken !== null) {
       axios.defaults.headers['Authorization'] = accessToken
@@ -48,13 +63,17 @@ class CheckAuth extends React.Component {
 
 // export default ScanScreen
 
-export default createSwitchNavigator(
+const Root = createSwitchNavigator(
   {
     AuthLoading: CheckAuth,
     App: App,
-    Auth: AuthStack
+    Auth: createAppContainer(AuthStack)
   },
   {
     initialRouteName: 'AuthLoading'
   }
 )
+
+export default createAppContainer(Root)
+
+// export default createAppContainer(Root)

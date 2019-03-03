@@ -1,80 +1,17 @@
 import React, { Component } from 'react'
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  Text,
-  FlatList,
-  SafeAreaView,
-  Image
-} from 'react-native'
-import { Header } from 'react-native-elements'
-import { ifIphoneX } from 'react-native-iphone-x-helper'
+import { View, StyleSheet, ScrollView, Text, Image } from 'react-native'
 import { connect } from 'react-redux'
 
 // components
-import TableCard from '../../components/TableCard.component'
 import BillDetail from '../../components/BillDetail.component'
 import CartSummary from '../../components/CartSummary.component'
+import Header from '../../components/Header.component'
 
 // assets
 import APP_LOGO from '../../assets/img/full-logo.png'
 import SLIP_TAIL from '../../assets/img/slip-tail.png'
 
 const ED_SHEERAN = 'https://ichef.bbci.co.uk/images/ic/960x540/p02kq8k6.jpg'
-
-const DETAIL = [
-  { detail: 'Shabu Ramen', quantity: 1, price: 150 },
-  { detail: 'Yakisoba', quantity: 1, price: 150 },
-  { detail: 'Mineral Water', quantity: 1, price: 150 },
-  { detail: 'Mi Goreng', quantity: 1, price: 150 },
-  { detail: 'Green Tea', quantity: 1, price: 120 },
-  { detail: 'Shabu Ramen', quantity: 1, price: 150 },
-  { detail: 'Yakisoba', quantity: 1, price: 150 },
-  { detail: 'Mineral Water', quantity: 1, price: 150 },
-  { detail: 'Mi Goreng', quantity: 1, price: 150 },
-  { detail: 'Green Tea', quantity: 1, price: 120 }
-]
-
-const AppHeader = props => {
-  return (
-    <SafeAreaView style={{ backgroundColor: '#FFF' }}>
-      <Header
-        leftComponent={{
-          icon: 'keyboard-arrow-left',
-          color: '#7E7E7E',
-          size: 30,
-          onPress: props.back
-        }}
-        centerComponent={{
-          text: 'Cash Payment',
-          style: { color: '#000000', fontSize: 18 }
-        }}
-        rightComponent={{
-          text: 'Pay',
-          style: { color: '#007AFF', fontSize: 18 },
-          onPress: props.pay
-        }}
-        containerStyle={{
-          backgroundColor: '#FFF',
-          justifyContent: 'space-around',
-          borderBottomWidth: 0,
-          paddingTop: ifIphoneX ? 0 : 10
-        }}
-      />
-    </SafeAreaView>
-  )
-}
-
-const RowValue = props => {
-  const { label, value } = props
-  return (
-    <View style={[styles.detailRow]}>
-      <Text style={styles.thead}>{label}</Text>
-      <Text style={styles.value}>{value}</Text>
-    </View>
-  )
-}
 
 class ConfirmPayment extends Component {
   renderDetail = ({ item, index }) => {
@@ -128,17 +65,18 @@ class ConfirmPayment extends Component {
 
   render () {
     const {
-      cart: { cart }
+      cart: { cart, paymentMethod }
     } = this.props
-    const mock_cart = [
-      { id: 1, productName: 'Test', totalPrice: 500, quantity: 10 },
-      { id: 2, productName: 'Test', totalPrice: 500, quantity: 10 },
-      { id: 3, productName: 'Test', totalPrice: 500, quantity: 10 },
-      { id: 4, productName: 'Test', totalPrice: 500, quantity: 10 }
-    ]
+    const title = paymentMethod === 'card' ? 'Card Payment' : 'Cash Payment'
     return (
       <View style={styles.screen}>
-        <AppHeader back={this.back} pay={this.pay} />
+        <Header
+          left="back"
+          right="Pay"
+          onPressRight={this.pay}
+          onPressLeft={this.back}
+          center={title}
+        />
         <View style={styles.br} />
         <View style={styles.br} />
         <ScrollView
@@ -173,15 +111,9 @@ class ConfirmPayment extends Component {
               </View>
             </View>
             <View style={styles.hr} />
-            <BillDetail cart={mock_cart} />
+            <BillDetail cart={cart} />
             <View style={styles.hr} />
-            <RowValue label="Total items..." value="4" />
-            <RowValue label="Subtotal" value="64" />
-            <RowValue label="Tax (7.000%)…" value="930" />
-            <View style={[styles.row, styles.justifyBetween]}>
-              <Text style={styles.thead}>Total :</Text>
-              <Text style={styles.totalPrice}>฿ 995.00</Text>
-            </View>
+            <CartSummary cart={cart} />
             <View style={styles.br} />
           </View>
           <Image source={SLIP_TAIL} style={styles.slipTail} />

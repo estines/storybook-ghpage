@@ -23,7 +23,7 @@ import { fetchProfile, onProfileFormChange } from '../../store/actions'
 import AuthService from '../../services/auth.service'
 import ImageService from '../../services/image.service'
 
-const ED_SHEERAN = 'https://ichef.bbci.co.uk/images/ic/960x540/p02kq8k6.jpg'
+import AVATAR from '../../assets/img/boy.png'
 
 class EditProfileScreen extends Component {
   state = {
@@ -85,10 +85,9 @@ class EditProfileScreen extends Component {
       } = this.props
 
       // check image is local
-      console.log(image, 'image...')
       if (image && image.includes('assets-library')) {
         const { file } = this.state
-        const urls = await ImageService.upload([file])
+        const urls = await ImageService.upload([file.uri])
         image = urls[0]
       }
 
@@ -132,14 +131,17 @@ class EditProfileScreen extends Component {
       { title: 'Import from Facebook', onPress: () => ({}) },
       { title: 'Remove Profile Photo', onPress: this.removeImage }
     ]
-    let imgUrl = image
+    let avatar = AVATAR
     if (image && image !== null) {
-      console.log(image, 'image...')
-      if (!image.includes('assets-library')) {
-        imgUrl = `https://orderking.s3.amazonaws.com/images/thumbnail/${image}`
+      if (image.includes('assets-library')) {
+        avatar = { uri: image }
+      } else {
+        avatar = {
+          uri: `https://orderking.s3.amazonaws.com/images/thumbnail/${image}`
+        }
       }
     }
-
+    console.log(avatar, 'avatar....')
     return (
       <ScrollView style={styles.screen} scrollEnabled={false}>
         <Header
@@ -151,10 +153,7 @@ class EditProfileScreen extends Component {
           onPressRight={this.save}
         />
         <View style={styles.container}>
-          <Image
-            source={{ uri: image && image !== null ? imgUrl : ED_SHEERAN }}
-            style={[styles.avatar]}
-          />
+          <Image source={avatar} style={styles.avatar} />
           <View style={styles.br} />
           <View style={styles.br} />
           <TouchableOpacity onPress={this.toggleImageSource}>

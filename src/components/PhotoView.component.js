@@ -2,13 +2,9 @@ import React, { Component } from 'react'
 import {
   Dimensions,
   Image,
-  Modal,
   StyleSheet,
   ScrollView,
-  Platform,
-  Text,
   TouchableWithoutFeedback,
-  TouchableOpacity,
   View
 } from 'react-native'
 import ImageView from 'react-native-image-view'
@@ -42,15 +38,24 @@ export default class PhotoView extends Component {
 
   getPagedPhotoView () {
     return this.sources.map((url, index) => {
-      const uri = `https://orderking.s3.amazonaws.com/images/thumbnail/${url}`
+      const size = this.props.showOriginalCover ? 'original' : 'thumbnail'
+      const uri = `https://orderking.s3.amazonaws.com/images/${size}/${url}`
       return (
         <TouchableWithoutFeedback
           key={index}
           onPress={() => this._onPressScrollView(index)}
         >
-          <View style={{ width: WIDTH, height: this.props.height }}>
+          <View
+            style={{
+              width: this.props.width || WIDTH,
+              height: this.props.height
+            }}
+          >
             <Image
-              style={{ height: this.props.height }}
+              style={{
+                height: this.props.height,
+                width: this.props.width || 'auto'
+              }}
               source={{ uri }}
               resizeMode={'cover'}
             />
@@ -109,7 +114,8 @@ export default class PhotoView extends Component {
   _onScroll = e => {
     let offset = e.nativeEvent.contentOffset
     if (offset) {
-      let page = Math.round(offset.x / WIDTH)
+      const width = this.props.width || WIDTH
+      let page = Math.round(offset.x / width)
       if (page === this.pagePrevious) {
         return
       }
@@ -142,23 +148,24 @@ export default class PhotoView extends Component {
     const { targetImage } = this.state
     const images = this.props.sources.map(s => ({
       source: {
-        uri: `https://orderking.s3.amazonaws.com/images/thumbnail/${s}`
+        uri: `https://orderking.s3.amazonaws.com/images/original/${s}`
       },
       width: WIDTH,
       resizeMode: 'contain'
     }))
 
-    console.log(images, 'images edited')
-
     return (
-      <View>
+      <View style={{ height: this.props.height }}>
         <ScrollView
           bounces={false}
           centerContent={true}
           horizontal={true}
           onScroll={this._onScroll}
           pagingEnabled={true}
-          style={{ backgroundColor: this.props.styleBackgroundColor }}
+          style={{
+            height: this.props.height,
+            backgroundColor: this.props.styleBackgroundColor
+          }}
           showsHorizontalScrollIndicator={false}
           scrollEventThrottle={256}
           directionalLockEnabled={true}
@@ -223,5 +230,6 @@ PhotoView.defaultProps = {
   styleIndicatorColorSelected: 'rgba(255, 255, 255, .8)',
   styleIndicatorGap: 5,
   styleIndicatorHeight: 10,
-  styleIndicatorWidth: 10
+  styleIndicatorWidth: 10,
+  showOriginalCover: false
 }

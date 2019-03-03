@@ -5,28 +5,52 @@ import {
   Text,
   Image,
   Dimensions,
-  TouchableOpacity
+  TouchableOpacity,
+  AsyncStorage
 } from 'react-native'
+import { connect } from 'react-redux'
 
 // components
 import Header from './Header.component'
 
 // assets
 import LOGOUT from '../assets/icon/logout.png'
+import AVATAR from '../assets/img/boy.png'
 
-const ED_SHEERAN = 'https://ichef.bbci.co.uk/images/ic/960x540/p02kq8k6.jpg'
+const logout = async props => {
+  try {
+    props.navigation.closeDrawer()
+    await AsyncStorage.removeItem('access_token')
+    await AsyncStorage.removeItem('userId')
+    props.navigation.navigate('Auth', { screen: 'Auth' })
+  } catch (error) {
+    console.log(error, 'error...')
+  }
+}
 
-export default props => {
+const SideBar = props => {
+  const { name, image, email } = props
+  let avatar = AVATAR
+  if (image && image !== null) {
+    avatar = {
+      uri: `https://orderking.s3.amazonaws.com/images/thumbnail/${image}`
+    }
+  }
+
   return (
     <View style={styles.screen}>
-      <Header left="close" containerStyle={styles.header} />
+      <Header
+        left="close"
+        containerStyle={styles.header}
+        onPressLeft={() => props.navigation.closeDrawer()}
+      />
       <View style={styles.top}>
-        <Image source={{ uri: ED_SHEERAN }} style={styles.avatar} />
-        <Text style={styles.name}>Shawn Mentos</Text>
-        <Text style={styles.email}>Shawneat@gmail.com</Text>
+        <Image source={avatar} style={styles.avatar} />
+        <Text style={styles.name}>{name}</Text>
+        <Text style={styles.email}>{email}</Text>
       </View>
       <View style={styles.content}>
-        <TouchableOpacity style={styles.menu}>
+        <TouchableOpacity style={styles.menu} onPress={() => logout(props)}>
           <Image source={LOGOUT} />
           <Text style={styles.menuText}>Log Out</Text>
         </TouchableOpacity>
@@ -34,11 +58,15 @@ export default props => {
     </View>
   )
 }
+
+const mapState = state => state.profile
+
+export default connect(mapState)(SideBar)
+
 const { width: WIDTH, height: HEIGHT } = Dimensions.get('window')
 
 const avatarSize = WIDTH * 0.3
 
-const cardWidth = WIDTH / 2 - 30
 const styles = StyleSheet.create({
   menuText: {
     flex: 1,

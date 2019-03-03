@@ -14,6 +14,17 @@ const login = async (username, password) => {
   }
 }
 
+const register = async body => {
+  try {
+    const res = await axios.post('/user-account', body)
+    const { data } = res
+    await login(body.username, body.password)
+    return data
+  } catch (error) {
+    throw error
+  }
+}
+
 const profile = async () => {
   try {
     const userId = await AsyncStorage.getItem('userId')
@@ -39,5 +50,6 @@ const updateProfile = async body => {
 export default {
   login,
   profile,
-  updateProfile
+  updateProfile,
+  register
 }

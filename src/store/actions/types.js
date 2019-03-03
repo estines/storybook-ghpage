@@ -11,3 +11,6 @@ export const FETCH_CATEGORY = 'FETCH_CATEGORY'
 // profile
 export const FETCH_PROFILE = 'FETCH_PROFILE'
 export const ON_PROFILE_FORM_CHANGE = 'ON_PROFILE_FORM_CHANGE'
+
+// card
+export const FETCH_CARD = 'FETCH_CARD'

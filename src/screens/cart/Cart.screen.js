@@ -6,13 +6,17 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  SafeAreaView
+  SafeAreaView,
+  AsyncStorage
 } from 'react-native'
-import HeaderImageScrollView from 'react-native-image-header-scroll-view'
+import HeaderImageScrollView, {
+  TriggeringView
+} from 'react-native-image-header-scroll-view'
 import { connect } from 'react-redux'
 import { Button } from 'react-native-elements'
 import { MaterialIcons } from '@expo/vector-icons'
-import { ifIphoneX } from 'react-native-iphone-x-helper'
+import * as Animatable from 'react-native-animatable'
+import { Header as NHeader } from 'react-navigation'
 
 // redux
 import { fetchCategory } from '../../store/actions'
@@ -20,12 +24,20 @@ import { fetchCategory } from '../../store/actions'
 // assets
 import HEADER from '../../assets/img/cart-header.png'
 import CASH from '../../assets/icon/cash.png'
+import VISA from '../../assets/icon/visa.png'
+import MASTER_CARD from '../../assets/icon/mastercard.png'
 import AVATAR from '../../assets/icon/avatar.png'
 
 // components
 import TableCard from '../../components/TableCard.component'
 import CardItemCard from '../../components/CardItemCard.component'
 import CartSummary from '../../components/CartSummary.component'
+
+// service
+import socket from '../../services/socket.service'
+
+const MIN_HEIGHT = NHeader.HEIGHT
+const MAX_HEIGHT = 200
 
 class CartScreen extends Component {
   state = {
@@ -44,11 +56,19 @@ class CartScreen extends Component {
       this.setState({ loading: true })
       const {
         cart: {
-          restaurant: { id }
+          restaurant: { id },
+          table
         }
       } = this.props
       await this.props.fetchCategory(id)
+
       this.setState({ loading: false })
+      // const userId = await AsyncStorage.getItem('userId')
+      // socket.emit('join table', {
+      //   table: table.id,
+      //   restaurant: id,
+      //   userId: userId
+      // })
     } catch (error) {
       this.setState({ loading: false })
     }
@@ -62,6 +82,37 @@ class CartScreen extends Component {
     this.props.navigation.navigate('HomeScreen')
   }
 
+  renderPaymentMethod = () => {
+    const {
+      cart: { paymentMethod }
+    } = this.props
+    if (paymentMethod === 'card') {
+      const {
+        cart: {
+          paymentMethodData: { last_digits, brand }
+        }
+      } = this.props
+      return [
+        <Image
+          source={brand === 'Visa' ? VISA : MASTER_CARD}
+          style={styles.paymentMethodIcon}
+        />,
+        <Text
+          style={styles.paymentMethodBtnText}
+        >{`**** **** **** ${last_digits}`}</Text>
+      ]
+    } else {
+      return [
+        <Image source={CASH} style={styles.paymentMethodIcon} />,
+        <Text style={styles.paymentMethodBtnText}>CASH</Text>
+      ]
+    }
+  }
+
+  makePayment = () => {
+    this.props.navigation.navigate('ConfirmPayment')
+  }
+
   render () {
     const {
       cart: { cart, table, restaurant }
@@ -70,29 +121,36 @@ class CartScreen extends Component {
     return (
       <View style={styles.screen}>
         <HeaderImageScrollView
-          maxHeight={200}
-          minHeight={100}
+          maxHeight={MAX_HEIGHT}
+          minHeight={MIN_HEIGHT}
           headerImage={HEADER}
           showsVerticalScrollIndicator={false}
-          style={{
-            paddingBottom: 100,
-            backgroundColor: 'transparent',
-            flex: 1
-          }}
-          contentContainerStyle={{
-            marginBottom: 100,
-            backgroundColor: '#F6F6F6'
-          }}
           ScrollViewComponent={ScrollView}
           renderFixedForeground={() => (
-            <View style={styles.foreground}>
-              <TouchableOpacity style={styles.closeBtn} onPress={this.back}>
-                <MaterialIcons name="close" size={30} color="#FFF" />
+            <Animatable.View
+              style={styles.navTitleView}
+              ref={navTitleView => {
+                this.navTitleView = navTitleView
+              }}
+            >
+              <Text style={styles.navTitle}>My Cart</Text>
+            </Animatable.View>
+          )}
+          renderForeground={() => (
+            <View style={styles.titleContainer}>
+              <TouchableOpacity onPress={this.back}>
+                <MaterialIcons name="close" color="#FFF" size={30} />
               </TouchableOpacity>
               <Text style={styles.title}>My Cart</Text>
             </View>
           )}
         >
+          <TriggeringView
+            onHide={() => this.navTitleView.fadeInUp(200)}
+            onDisplay={() => {
+              this.navTitleView.fadeOut(100)
+            }}
+          />
           <View style={styles.container}>
             <TableCard
               time={time}
@@ -112,8 +170,7 @@ class CartScreen extends Component {
                 style={styles.paymentMethod}
                 onPress={() => this.props.navigation.navigate('PaymentMethod')}
               >
-                <Image source={CASH} style={styles.paymentMethodIcon} />
-                <Text style={styles.paymentMethodBtnText}>CASH</Text>
+                {this.renderPaymentMethod()}
                 <MaterialIcons
                   name="keyboard-arrow-down"
                   size={25}
@@ -129,7 +186,7 @@ class CartScreen extends Component {
               title="MAKE A PAYMENT"
               buttonStyle={styles.submitBtn}
               titleStyle={styles.submitBtnTitle}
-              onPress={() => this.props.navigation.navigate('ConfirmPayment')}
+              onPress={this.makePayment}
             />
           </View>
         </SafeAreaView>
@@ -139,11 +196,29 @@ class CartScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  closeBtn: {
-    position: 'absolute',
-    top: ifIphoneX ? 40 : 10,
-    left: 0,
-    marginLeft: '5%'
+  titleContainer: {
+    flex: 1,
+    alignSelf: 'stretch',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    paddingHorizontal: '5%',
+    position: 'relative',
+    paddingTop: '10%'
+  },
+  navTitleView: {
+    width: '100%',
+    height: MIN_HEIGHT,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 0,
+    paddingTop: 20,
+    paddingHorizontal: '5%'
+  },
+  navTitle: {
+    color: 'white',
+    fontSize: 18,
+    backgroundColor: 'transparent'
   },
   totalGuests: {
     marginLeft: 5
@@ -189,12 +264,8 @@ const styles = StyleSheet.create({
   title: {
     color: '#FFF',
     fontSize: 34,
-    fontWeight: 'bold'
-  },
-  foreground: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: '5%'
+    fontWeight: 'bold',
+    marginTop: 30
   },
   br: {
     marginVertical: 10
@@ -202,7 +273,8 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: '5%',
     backgroundColor: '#F6F6F6',
-    flex: 1
+    flex: 1,
+    paddingBottom: 150
   },
   screen: {
     flex: 1,

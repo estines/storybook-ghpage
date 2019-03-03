@@ -9,20 +9,23 @@ import {
   ScrollView
 } from 'react-native'
 import { LinearGradient } from 'expo'
+import { connect } from 'react-redux'
 
+// redux
+import { fetchProfile } from '../../store/actions'
 // assets
 import GRID from '../../assets/icon/grid.png'
 import LIST from '../../assets/icon/list.png'
 
 // services
-import FeedService from '../../services/feed.service'
+import FeedService from '../../services/review.service'
 
 // components
 import GridFeed from '../../components/GridFeed.component'
 import RowFeed from '../../components/RowFeed.component'
 import Header from '../../components/Header.component'
 
-const ED_SHEERAN = 'https://ichef.bbci.co.uk/images/ic/960x540/p02kq8k6.jpg'
+import AVATAR from '../../assets/img/boy.png'
 
 const SIDE_CONTENT = props => {
   const { label, value } = props
@@ -34,22 +37,47 @@ const SIDE_CONTENT = props => {
   )
 }
 
-export default class FeedScreen extends Component {
+const amountFromList = prices => {
+  if (prices && prices.length > 0) {
+    return prices.length > 1 ? prices.reduce((a, b) => a + b) : prices[0]
+  } else {
+    return 0
+  }
+}
+
+const totalRestaurant = reviews => {
+  let restaurants = []
+  for (let review of reviews) {
+    if (!restaurants.includes(review.restaurantId)) {
+      restaurants.push(review.restaurantId)
+    }
+  }
+  return restaurants.length
+}
+
+class FeedScreen extends Component {
   state = {
-    image: ED_SHEERAN,
-    status: 'Literally born to eat 🍔',
-    name: 'Shawn Mentos',
+    image: '',
     viewType: 'grid',
-    feeds: []
+    feeds: [],
+    totalImages: 0,
+    totalRestaurants: 0
   }
 
-  componentDidMount () {
+  async componentDidMount () {
     this.fetchFeed()
   }
 
-  fetchFeed = () => {
-    const feeds = FeedService.list()
-    this.setState({ feeds })
+  fetchFeed = async () => {
+    try {
+      const feeds = await FeedService.list()
+      const amountList = await feeds.map(f => f.images.length)
+      const totalImages = amountFromList(amountList)
+      const totalRestaurants = totalRestaurant(feeds)
+      this.setState({ feeds, totalImages, totalRestaurants })
+    } catch (error) {
+      console.log(error, 'error...')
+    }
   }
 
   renderFeed = () => {
@@ -64,26 +92,40 @@ export default class FeedScreen extends Component {
     this.props.navigation.navigate('HomeScreen')
   }
   render () {
-    const { status, name, viewType } = this.state
+    const { viewType, totalImages, totalRestaurants } = this.state
+    const { name, bio, image } = this.props
+    let avatar = AVATAR
+    if (image && image !== null) {
+      avatar = {
+        uri: `https://orderking.s3.amazonaws.com/images/thumbnail/${image}`
+      }
+    }
     return (
       <ScrollView style={styles.screen} showsVerticalScrollIndicator={false}>
         <View style={styles.top}>
-          <Header left="close" containerStyle={styles.header} onPressLeft={this.back} />
+          <Header
+            left="close"
+            containerStyle={styles.header}
+            onPressLeft={this.back}
+          />
           <Text style={styles.name}>{name}</Text>
-          <Text style={styles.status}>{status}</Text>
+          <Text style={styles.status}>{bio}</Text>
           <View style={styles.br} />
           <View style={styles.br} />
           <View style={styles.row}>
-            <SIDE_CONTENT label="Pictures" value={1608} />
+            <SIDE_CONTENT label="Pictures" value={totalImages} />
             <LinearGradient
               style={styles.avatarWrapper}
               colors={['#EF955E', '#BD5A5E']}
               start={[0, 0]}
               end={[1, 1]}
             >
-              <Image source={{ uri: ED_SHEERAN }} style={[styles.avatar]} />
+              <Image
+                source={avatar}
+                style={[styles.avatar]}
+              />
             </LinearGradient>
-            <SIDE_CONTENT label="Pictures" value={1608} />
+            <SIDE_CONTENT label="Restaurants" value={totalRestaurants} />
           </View>
           <View style={styles.br} />
         </View>
@@ -119,6 +161,13 @@ export default class FeedScreen extends Component {
     )
   }
 }
+
+const mapState = state => state.profile
+
+export default connect(
+  mapState,
+  { fetchProfile }
+)(FeedScreen)
 
 const { width: WIDTH, height: HEIGHT } = Dimensions.get('window')
 

@@ -13,23 +13,32 @@ import { LinearGradient } from 'expo'
 import { MaterialIcons, AntDesign } from '@expo/vector-icons'
 import StarRating from 'react-native-star-rating'
 import { TextField } from 'react-native-material-textfield'
+import { connect } from 'react-redux'
+
+// components
 import GalleryPicker from '../../components/modals/GalleryPicker.component'
-
 import CircleMenuButton from '../../components/CircleMenuBtn.component'
+import Spinner from '../../components/Spinner.component'
 
-export default class ReviewScreen extends Component {
+// services
+import ImageService from '../../services/image.service'
+import ReviewService from '../../services/review.service'
+
+import ErrorHandler from '../../libs/error'
+
+class ReviewScreen extends Component {
   state = {
     show: '',
     rating: 0,
     note: '',
     galleryVisible: false,
-    images: []
+    images: [],
+    loading: false
   }
 
   onSelectImage = async data => {
     const { images } = this.state
     const target = await images.find(i => i === data.uri)
-    console.log(target, 'target..')
     if (target) {
       const new_images = await images.filter(i => i !== data.uri)
       this.setState({
@@ -57,14 +66,21 @@ export default class ReviewScreen extends Component {
     })
   }
 
+  cancel = () => {
+    this.props.navigation.popToTop()
+  }
+
   renderBody = () => {
-    const { show, rating, note, image, images } = this.state
+    const { show, rating, note, images } = this.state
+    const {
+      restaurant: { name }
+    } = this.props
     if (show === 'rate') {
       return (
         <Fragment>
           <View style={styles.br} />
           <Text style={styles.subTitle}>Earn 1 stamp</Text>
-          <Text style={styles.title}>Shabu Ramen </Text>
+          <Text style={styles.title}>{name}</Text>
           <View style={styles.br} />
           <StarRating
             disabled={false}
@@ -130,7 +146,7 @@ export default class ReviewScreen extends Component {
             </LinearGradient>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.cancelBtn}>
+          <TouchableOpacity style={styles.cancelBtn} onPress={this.cancel}>
             <Text style={styles.cancelText}>No, Thanks</Text>
           </TouchableOpacity>
         </Fragment>
@@ -142,14 +158,37 @@ export default class ReviewScreen extends Component {
     this.props.navigation.navigate('HomeScreen')
   }
 
-  done = () => {
-    this.props.navigation.navigate('FinishReview')
-
+  done = async () => {
+    try {
+      const { rating, note, images: localImages } = this.state
+      const {
+        restaurant,
+        navigation: {
+          state: {
+            params: { orderId }
+          }
+        }
+      } = this.props
+      this.setState({ loading: true })
+      const images = await ImageService.upload(localImages)
+      const body = {
+        rating,
+        note,
+        images,
+        restaurantId: restaurant.id,
+        orderId
+      }
+      await ReviewService.create(body)
+      this.setState({ loading: false })
+      this.props.navigation.navigate('FinishReview')
+    } catch (error) {
+      this.setState({ loading: false })
+      ErrorHandler(error)
+    }
   }
 
   render () {
-    const { galleryVisible, images } = this.state
-    console.log(images, 'images..')
+    const { galleryVisible, images, loading } = this.state
     return (
       <ScrollView style={{ flex: 1 }} scrollEnabled={false}>
         <ImageBackground
@@ -172,10 +211,14 @@ export default class ReviewScreen extends Component {
           multiple
           selected={images}
         />
+        <Spinner visible={loading} />
       </ScrollView>
     )
   }
 }
+
+const mapState = state => state.cart
+export default connect(mapState)(ReviewScreen)
 
 const { height: HEIGHT } = Dimensions.get('window')
 
@@ -188,7 +231,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     resizeMode: 'contain',
-    marginHorizontal: 5,
+    marginHorizontal: 5
   },
   row: {
     width: '70%',

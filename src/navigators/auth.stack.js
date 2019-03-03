@@ -4,20 +4,14 @@ import Login from '../screens/auth/Login.screen'
 import Register from '../screens/auth/Register.screen'
 import EnterPhoneNumber from '../screens/auth/EnterPhoneNumber.screen'
 import VerifyPhone from '../screens/auth/VerifyPhone.screen'
+import EmailRegister from '../screens/auth/EmailRegister.screen'
 
 const screens = {
-  Login: {
-    screen: Login
-  },
-  Register: {
-    screen: Register
-  },
-  EnterPhoneNumber: {
-    screen: EnterPhoneNumber
-  },
-  VerifyPhone: {
-    screen: VerifyPhone
-  }
+  Login,
+  Register,
+  EnterPhoneNumber,
+  VerifyPhone,
+  EmailRegister
 }
 
 const fade = props => {

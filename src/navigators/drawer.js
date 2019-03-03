@@ -11,6 +11,7 @@ import HistoryStack from './history.stack'
 import StampStack from './stamp.stack'
 import FeedStack from './feed.stack'
 import ScanStack from './scan.stack'
+import MainStack from './main.stack'
 
 // screens
 import HomeScreen from '../screens/Home.screen'
@@ -20,30 +21,7 @@ const drawerWidth = width - width / 3
 
 const Drawer = createDrawerNavigator(
   {
-    HomeScreen: {
-      screen: HomeScreen
-    },
-    OrderStack: {
-      screen: OrderStack
-    },
-    AccountStack: {
-      screen: AccountStack
-    },
-    HistoryStack: {
-      screen: HistoryStack,
-      navigationOptions: {
-        drawerLockMode: 'locked-closed'
-      }
-    },
-    StampStack: {
-      screen: StampStack
-    },
-    FeedStack: {
-      screen: FeedStack
-    },
-    ScanStack: {
-      screen: ScanStack
-    }
+    MainStack
   },
   {
     contentComponent: ({ navigation }) => <SideBar navigation={navigation} />,

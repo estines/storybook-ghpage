@@ -4,72 +4,43 @@ import {
   StyleSheet,
   Text,
   Image,
-  SafeAreaView,
   FlatList,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  RefreshControl
 } from 'react-native'
-import { Header } from 'react-native-elements'
-import { ifIphoneX } from 'react-native-iphone-x-helper'
 import { connect } from 'react-redux'
 import { MaterialIcons } from '@expo/vector-icons'
 
-import { selectPaymentMethod } from '../../store/actions'
+import { selectPaymentMethod, fetchCard } from '../../store/actions'
+import Header from '../../components/Header.component'
 
 import CASH from '../../assets/icon/cash.png'
 import VISA from '../../assets/icon/visa.png'
-
-const paymentMethods = [
-  {
-    id: 1,
-    paymentType: 'card',
-    cardNumber: '****2536'
-  },
-  {
-    id: 2,
-    paymentType: 'card',
-    cardNumber: '****1234'
-  },
-  {
-    id: 0,
-    paymentType: 'cash'
-  }
-]
-
-const AppHeader = props => {
-  return (
-    <SafeAreaView style={{ backgroundColor: '#FFF' }}>
-      <Header
-        leftComponent={{
-          icon: 'keyboard-arrow-left',
-          color: '#000000',
-          size: 30,
-          onPress: props.back
-        }}
-        centerComponent={{
-          text: 'Payment Method',
-          style: { color: '#000000', fontSize: 18 }
-        }}
-        containerStyle={{
-          backgroundColor: '#FFF',
-          justifyContent: 'space-around',
-          borderBottomWidth: 0,
-          paddingTop: ifIphoneX ? 0 : 10
-        }}
-      />
-    </SafeAreaView>
-  )
-}
+import MASTER_CARD from '../../assets/icon/mastercard.png'
 
 class PaymentMethod extends Component {
+  state = {
+    loading: false
+  }
+  componentDidMount = () => {
+    this.props.fetchCard()
+  }
+
+  fetchCards = async () => {
+    this.setState({ loading: true })
+    await this.props.fetchCard()
+    this.setState({ loading: false })
+  }
+
   selectPaymentMethod = (paymentMethod, paymentMethodId) => {
     this.props.selectPaymentMethod({ paymentMethod, paymentMethodId })
   }
 
   renderPaymentMethod = ({ item }) => {
-    const { paymentMethod, paymentMethodId } = this.props
-    const { paymentType } = item
-    if (paymentType === 'cash') {
+    const { paymentMethod, paymentMethodId } = this.props.cart
+    const { last_digits, id, paymentType, brand } = item
+    if (paymentType && paymentType === 'cash') {
       return (
         <TouchableOpacity
           style={styles.list}
@@ -84,16 +55,24 @@ class PaymentMethod extends Component {
           ) : null}
         </TouchableOpacity>
       )
-    } else if (paymentType === 'card') {
-      const { cardNumber, id } = item
+    } else {
       return (
         <TouchableOpacity
           style={styles.list}
-          onPress={() => this.selectPaymentMethod('card', id)}
+          onPress={() =>
+            this.props.selectPaymentMethod({
+              paymentMethod: 'card',
+              paymentMethodId: id,
+              paymentMethodData: { last_digits, brand }
+            })
+          }
         >
           <View style={styles.left}>
-            <Image source={VISA} style={styles.listIcon} />
-            <Text style={styles.thead}>{cardNumber}</Text>
+            <Image
+              source={brand === 'Visa' ? VISA : MASTER_CARD}
+              style={styles.listIcon}
+            />
+            <Text style={styles.thead}>{`**** **** **** ${last_digits}`}</Text>
           </View>
           {paymentMethod === 'card' && paymentMethodId === id ? (
             <MaterialIcons name="check" size={20} color="#CCCCCC" />
@@ -112,15 +91,31 @@ class PaymentMethod extends Component {
   }
 
   render () {
+    const {
+      card: { cards }
+    } = this.props
     return (
       <View style={styles.screen}>
-        <AppHeader back={this.back} />
+        <Header left="back" onPressLeft={this.back} center="Payment Method" />
         <View style={styles.theadWrapper}>
           <Text style={styles.thead}>Payment Method</Text>
         </View>
-        <ScrollView>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.loading}
+              onRefresh={this.fetchCards}
+            />
+          }
+        >
           <FlatList
-            data={paymentMethods}
+            data={[
+              ...cards,
+              {
+                id: 0,
+                paymentType: 'cash'
+              }
+            ]}
             keyExtractor={(item, index) => index.toString()}
             renderItem={this.renderPaymentMethod}
             style={styles.listContainer}
@@ -139,11 +134,11 @@ class PaymentMethod extends Component {
   }
 }
 
-const mapState = state => state.cart
+const mapState = state => state
 
 export default connect(
   mapState,
-  { selectPaymentMethod }
+  { selectPaymentMethod, fetchCard }
 )(PaymentMethod)
 
 const styles = StyleSheet.create({

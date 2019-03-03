@@ -1,14 +1,15 @@
 import axios from 'axios'
+import uuid from 'uuid/v4'
 
 const upload = async files => {
   try {
     const form = new FormData()
-    console.log(files, 'files...')
-    files.map(file => {
-      const { uri } = file
+    files.forEach(file => {
+      let name = uuid()
+      name = name.replace(/-/g, '')
       form.append('images', {
-        uri,
-        name: `${Date.now()}`,
+        uri: file,
+        name: name,
         type: 'image/jpg'
       })
     })

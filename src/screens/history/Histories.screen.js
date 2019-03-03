@@ -13,8 +13,9 @@ import HeaderImageScrollView, {
 import { connect } from 'react-redux'
 import format from 'date-fns/format'
 import isSameDay from 'date-fns/is_same_day'
-import { MaterialIcons } from '@expo/vector-icons'
-import { ifIphoneX } from 'react-native-iphone-x-helper'
+import { Header as NHeader } from 'react-navigation'
+import * as Animatable from 'react-native-animatable'
+import MaterialIcon from '@expo/vector-icons/MaterialIcons'
 
 // redux
 import { fetchMenu } from '../../store/actions'
@@ -25,17 +26,20 @@ import HEADER from '../../assets/img/history-bg.png'
 // components
 import HistoryTabHeader from '../../components/HistoryTabHeader.component'
 import HistoryItem from '../../components/HistoryItem.component'
-import Header from '../../components/Header.component'
 
 // services
-import HistoryService from '../../services/history.service'
+import HistoryService from '../../services/order.service'
 import { uniqString } from '../../libs/utils'
+
+const MIN_HEIGHT = NHeader.HEIGHT
+const MAX_HEIGHT = 200
 
 class CartScreen extends Component {
   state = {
     paymentType: 'cash',
     historyDates: [],
-    histories: []
+    histories: [],
+    display: true
   }
   async componentDidMount () {
     try {
@@ -77,6 +81,7 @@ class CartScreen extends Component {
   }
 
   renderHistory = ({ item }) => {
+    console.log(item, 'item...')
     return <HistoryItem data={item} onPress={this.viewHistory} />
   }
 
@@ -84,8 +89,9 @@ class CartScreen extends Component {
     const date = new Date(item)
     const { histories, paymentType } = this.state
     const targetHistories = histories.filter(
-      h => h.dateString === item && paymentType === h.paymentType
+      h => h.dateString === item && paymentType === h.paymentMethod
     )
+    console.log(targetHistories, 'targetHistories..')
     let totalPrice = 0
     if (targetHistories.length > 0) {
       if (targetHistories.length > 1) {
@@ -147,31 +153,43 @@ class CartScreen extends Component {
     return (
       <View style={styles.screen}>
         <HeaderImageScrollView
-          maxHeight={200}
-          minHeight={100}
+          maxHeight={MAX_HEIGHT}
+          minHeight={MIN_HEIGHT}
+          maxOverlayOpacity={0.6}
+          minOverlayOpacity={0.3}
+          fadeOutForeground
           headerImage={HEADER}
-          showsVerticalScrollIndicator={false}
-          style={{
-            backgroundColor: 'transparent',
-            flex: 1,
-            paddingBottom: 50
-          }}
           contentContainerStyle={{
             backgroundColor: '#F6F6F6',
             paddingBottom: 50
           }}
           ScrollViewComponent={ScrollView}
           renderFixedForeground={() => (
-            <View style={styles.foreground}>
-              <TouchableOpacity style={styles.closeBtn} onPress={this.back}>
-                <MaterialIcons name="close" size={30} color="#FFF" />
+            <Animatable.View
+              style={styles.navTitleView}
+              ref={navTitleView => {
+                this.navTitleView = navTitleView
+              }}
+            >
+              <Text style={styles.navTitle}>History</Text>
+            </Animatable.View>
+          )}
+          renderForeground={() => (
+            <View style={styles.titleContainer}>
+              <TouchableOpacity onPress={this.back}>
+                <MaterialIcon name="close" color="#FFF" size={30} />
               </TouchableOpacity>
-              <TriggeringView onHide={() => console.log('text hidden')}>
-                <Text style={styles.title}>History</Text>
-              </TriggeringView>
+              <Text style={styles.title}>History</Text>
             </View>
           )}
         >
+          <TriggeringView
+            style={styles.section}
+            onHide={() => this.navTitleView.fadeInUp(200)}
+            onDisplay={() => {
+              this.navTitleView.fadeOut(100)
+            }}
+          />
           <View style={styles.container}>
             <HistoryTabHeader
               selected={paymentType}
@@ -195,10 +213,33 @@ class CartScreen extends Component {
 
 const styles = StyleSheet.create({
   closeBtn: {
-    position: 'absolute',
-    top: ifIphoneX ? 40 : 10,
-    left: 0,
-    marginLeft: '5%'
+    // alignSelf: 'center',
+    // position: 'absolute',
+    // left: 10,
+    // top: 10
+  },
+  titleContainer: {
+    flex: 1,
+    alignSelf: 'stretch',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    paddingHorizontal: '5%',
+    position: 'relative'
+  },
+  navTitleView: {
+    width: '100%',
+    height: MIN_HEIGHT,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 0,
+    paddingTop: 20,
+    paddingHorizontal: '5%'
+  },
+  navTitle: {
+    color: 'white',
+    fontSize: 18,
+    backgroundColor: 'transparent'
   },
   totalPrice: {
     color: '#FF3B30'
@@ -216,19 +257,22 @@ const styles = StyleSheet.create({
   title: {
     color: '#FFF',
     fontSize: 34,
-    fontWeight: 'bold'
-  },
-  foreground: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: '5%'
+    fontWeight: 'bold',
+    marginTop: 40
   },
   br: {
     marginVertical: 10
   },
+  section: {
+    flex: 1,
+    position: 'relative'
+  },
   container: {
     paddingHorizontal: '5%',
-    backgroundColor: '#F6F6F6'
+    flex: 1,
+    width: '100%',
+    zIndex: 100,
+    marginTop: -30
   },
   screen: {
     flex: 1,

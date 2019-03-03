@@ -256,7 +256,7 @@ export default class MenuDetailModal extends Component {
             style={{ width: '100%', paddingBottom: 100 }}
             showsVerticalScrollIndicator={false}
           >
-            <PhotoView height={250} sources={images} />
+            <PhotoView height={300} sources={images} />
             <View style={styles.card}>
               <Text style={styles.name}>{name}</Text>
               <Text style={styles.description}>{description}</Text>
@@ -368,8 +368,8 @@ export default class MenuDetailModal extends Component {
     const optionsName = await this.getOptionsName(selectedOptions)
     const body = {
       id: Date.now(),
-      productId: id,
-      productName: name,
+      menuId: id,
+      menuName: name,
       options: selectedOptions,
       selectedOptionsName: optionsName,
       quantity,
@@ -395,7 +395,7 @@ export default class MenuDetailModal extends Component {
         position="bottom"
         backdropOpacity={0.1}
         transparent
-        animationType="side"
+        animationType="slide"
       >
         {this.renderBody()}
       </Modal>

@@ -58,8 +58,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 10,
     flexDirection: 'row',
-    marginTop: -30,
+    marginTop: 0,
     borderRadius: 30,
-    padding: 4
+    padding: 4,
+    zIndex: 1000,
+    elevation: 1
   }
 })

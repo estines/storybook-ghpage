@@ -4,7 +4,9 @@ import {
   Text,
   StyleSheet,
   Dimensions,
-  TouchableOpacity
+  TouchableOpacity,
+  StatusBar,
+  SafeAreaView
 } from 'react-native'
 import { ifIphoneX } from 'react-native-iphone-x-helper'
 import { MaterialIcons } from '@expo/vector-icons'
@@ -24,6 +26,10 @@ const renderLeft = (left, onPress) => {
 const renderRight = type => {
   if (type === 'save') {
     return <Text style={styles.text}>Save</Text>
+  } else if (type === 'add') {
+    return <Text style={styles.text}>Add</Text>
+  } else {
+    return <Text style={styles.text}>{type}</Text>
   }
 }
 export default props => {
@@ -37,29 +43,32 @@ export default props => {
     onPressRight
   } = props
   return (
-    <View
-      style={[
-        styles.wrapper,
-        containerStyle ? { ...containerStyle } : {},
-        hasShadow ? styles.shadow : {}
-      ]}
-    >
-      <View style={styles.left}>
-        <TouchableOpacity onPress={onPressLeft}>
-          {renderLeft(left, onPressLeft)}
-        </TouchableOpacity>
+    <SafeAreaView style={{ backgroundColor: 'rgba(255,255,255, 0.8)' }}>
+      <View
+        style={[
+          styles.wrapper,
+          containerStyle ? { ...containerStyle } : {},
+          hasShadow ? styles.shadow : {}
+        ]}
+      >
+        <View style={styles.left}>
+          <TouchableOpacity onPress={onPressLeft}>
+            {renderLeft(left)}
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.title}>{center}</Text>
+        <View style={styles.right}>
+          <TouchableOpacity onPress={onPressRight}>
+            {renderRight(right)}
+          </TouchableOpacity>
+        </View>
       </View>
-      <Text style={styles.title}>{center}</Text>
-      <View style={styles.right}>
-        <TouchableOpacity onPress={onPressRight}>
-          {renderRight(right)}
-        </TouchableOpacity>
-      </View>
-    </View>
+    </SafeAreaView>
   )
 }
 
 const { width: WIDTH } = Dimensions.get('window')
+const statusBarHeight = StatusBar.currentHeight
 
 const styles = StyleSheet.create({
   shadow: {
@@ -82,10 +91,11 @@ const styles = StyleSheet.create({
   wrapper: {
     width: WIDTH,
     backgroundColor: 'rgba(255,255,255, 0.8)',
-    padding: 20,
-    paddingTop: ifIphoneX ? 50 : 20,
+    padding: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    // backgroundColor: 'red',
+    paddingTop: statusBarHeight + 10
   }
 })

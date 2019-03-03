@@ -30,6 +30,17 @@ export default class RegisterScreen extends Component {
           titleStyle={styles.btnText}
           icon={<Image source={MOBILE} style={styles.btnIcon} />}
           onPress={() => navigation.navigate('EnterPhoneNumber')}
+          raised
+        />
+        <View style={styles.br} />
+        <Button
+          title="Sign Up with Email"
+          buttonStyle={styles.button}
+          containerStyle={styles.btnContainer}
+          titleStyle={styles.btnText}
+          icon={<Image source={MOBILE} style={styles.btnIcon} />}
+          onPress={() => navigation.navigate('EmailRegister')}
+          raised
         />
         <View style={styles.br} />
         <View style={styles.br} />
@@ -52,7 +63,8 @@ const styles = StyleSheet.create({
     color: '#FFF'
   },
   fbButton: {
-    backgroundColor: '#3E55A5'
+    backgroundColor: '#3E55A5',
+    borderRadius: 30
   },
   link: {
     color: '#4E5766',
@@ -61,7 +73,8 @@ const styles = StyleSheet.create({
     marginVertical: 10
   },
   btnContainer: {
-    width: '100%'
+    width: '100%',
+    backgroundColor: 'transparent'
   },
   btnText: {
     fontSize: 16,
@@ -72,10 +85,13 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     width: '100%',
     padding: 10,
+    borderColor: '#dbdbdb',
+    borderWidth: 1,
     shadowColor: '#dbdbdb',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.7,
-    shadowRadius: 10,
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 1,
     position: 'relative'
   },
   br: {

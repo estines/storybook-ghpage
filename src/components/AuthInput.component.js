@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, View, TextInput, Image } from 'react-native'
+import { StyleSheet, View, TextInput, Image, Platform } from 'react-native'
 
 import AVATAR from '../assets/icon/avatar.png'
 import PASSWORD from '../assets/icon/password.png'
@@ -16,7 +16,7 @@ const renderIcon = icon => {
 }
 
 const AuthInput = props => {
-  const { placeholder, icon } = props
+  const { placeholder, icon, setRef } = props
   return (
     <View style={styles.wrapper}>
       {renderIcon(icon)}
@@ -42,15 +42,16 @@ const styles = StyleSheet.create({
     borderColor: '#dbdbdb',
     backgroundColor: '#FFF',
     width: '100%',
-    padding: 20,
+    padding: 15,
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 30,
     paddingHorizontal: 30,
     shadowColor: '#dbdbdb',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.7,
-    shadowRadius: 10
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 1
   }
 })
 export default AuthInput

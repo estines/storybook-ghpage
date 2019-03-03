@@ -10,58 +10,76 @@ import {
 } from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons'
 import StarRating from 'react-native-star-rating'
+import { connect } from 'react-redux'
 
-const ED_SHEERAN = 'https://ichef.bbci.co.uk/images/ic/960x540/p02kq8k6.jpg'
+import PhotoView from '../components/PhotoView.component'
+import AVATAR from '../assets/img/boy.png'
 
-const renderFeed = ({ item }) => {
-  if (item && item.img) {
+const { width: WIDTH } = Dimensions.get('window')
+
+const imageSize = WIDTH * 0.9
+
+const renderFeed = ({ item }, props) => {
+  const { images, rating, restaurant } = item
+  const { name, image, bio } = props
+  let avatar = AVATAR
+  if (image && image !== null) {
+    avatar = {
+      uri: `https://orderking.s3.amazonaws.com/images/thumbnail/${image}`
+    }
+  }
+  if (images && images.length > 0) {
     return (
       <View style={styles.feed}>
         <View style={styles.header}>
-          <Image source={{ uri: ED_SHEERAN }} style={styles.avatar} />
+          <Image source={avatar} style={styles.avatar} />
           <View style={styles.center}>
-            <Text style={styles.name}>Shawn Mentos</Text>
-            <Text style={styles.location}>Ada Best Burger Ever</Text>
+            <Text style={styles.name}>{name}</Text>
+            <Text style={styles.location}>{bio}</Text>
           </View>
           <TouchableOpacity>
             <MaterialIcons name="more-vert" color="#7E7E7E" size={25} />
           </TouchableOpacity>
         </View>
         <View style={styles.br} />
-        <Image source={{ uri: item.img }} style={styles.image} />
+        <PhotoView
+          sources={images}
+          height={imageSize}
+          width={imageSize}
+          showOriginalCover
+        />
+        {/* <Image source={{ uri: image }} style={styles.image} /> */}
         <View style={[styles.row, { paddingVertical: 0, marginTop: 10 }]}>
           <StarRating
             disabled
             maxStars={5}
-            rating={3}
+            rating={rating}
             starSize={14}
             fullStarColor="#E45655"
             emptyStarColor="#E45655"
             starStyle={{ marginHorizontal: 2 }}
           />
-          <Text style={[styles.note, { marginLeft: 5 }]}>
-            (3)
-          </Text>
+          <Text style={[styles.note, { marginLeft: 5 }]}>({rating})</Text>
         </View>
         <View style={styles.row}>
-          <Text style={[styles.note, { marginRight: 20 }]}>Shawn Mentos</Text>
-          <Text style={styles.note}>
-            Probably the best burger in Bangkok I guess..
+          <Text style={[styles.note, { marginRight: 20 }]}>
+            {restaurant && restaurant.name}
           </Text>
+          <Text style={styles.note}>{restaurant && restaurant.aboutUs}</Text>
         </View>
       </View>
     )
   }
 }
 
-export default props => {
+const RowFeed = props => {
   const { feeds } = props
   return (
     <View style={styles.wrapper}>
       <FlatList
         data={feeds}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={renderFeed}
+        renderItem={item => renderFeed(item, props)}
         extraData={this.state}
         style={{ flex: 1, width: '100%', paddingBottom: 50 }}
         contentContainerStyle={{ paddingBottom: 50 }}
@@ -71,10 +89,9 @@ export default props => {
     </View>
   )
 }
+const mapState = state => state.profile
 
-const { width: WIDTH } = Dimensions.get('window')
-
-const imageSize = WIDTH * 0.9
+export default connect(mapState)(RowFeed)
 
 const styles = StyleSheet.create({
   note: {

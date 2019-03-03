@@ -4,55 +4,26 @@ import {
   StyleSheet,
   ScrollView,
   Text,
-  SafeAreaView,
   Image,
   ImageBackground
 } from 'react-native'
-import { Header } from 'react-native-elements'
-import { ifIphoneX } from 'react-native-iphone-x-helper'
 import { connect } from 'react-redux'
 import { QRCode } from 'react-native-custom-qr-codes'
 
 // components
 import BillDetail from '../../components/BillDetail.component'
 import PaymentProgress from '../../components/PaymentProgress.component'
+import CartSummary from '../../components/CartSummary.component'
+import Header from '../../components/Header.component'
 
 // assets
 import APP_LOGO from '../../assets/img/full-logo.png'
 import SLIP_TAIL from '../../assets/img/slip-tail.png'
 
-const ED_SHEERAN = 'https://ichef.bbci.co.uk/images/ic/960x540/p02kq8k6.jpg'
+import ErrorHandler from '../../libs/error'
+import OrderService from '../../services/order.service'
 
-const AppHeader = props => {
-  const { done } = props
-  return (
-    <SafeAreaView style={{ backgroundColor: '#FFF' }}>
-      <Header
-        leftComponent={{
-          icon: 'keyboard-arrow-left',
-          color: '#7E7E7E',
-          size: 30,
-          onPress: props.back
-        }}
-        centerComponent={{
-          text: 'Card Payment',
-          style: { color: '#000000', fontSize: 18 }
-        }}
-        rightComponent={{
-          text: 'Done',
-          style: { color: done ? '#007AFF' : '#CECECE', fontSize: 18 },
-          onPress: props.finish
-        }}
-        containerStyle={{
-          backgroundColor: '#FFF',
-          justifyContent: 'space-around',
-          borderBottomWidth: 0,
-          paddingTop: ifIphoneX ? 0 : 10
-        }}
-      />
-    </SafeAreaView>
-  )
-}
+const ED_SHEERAN = 'https://ichef.bbci.co.uk/images/ic/960x540/p02kq8k6.jpg'
 
 const RowValue = props => {
   const { label, value } = props
@@ -71,6 +42,7 @@ class ConfirmPayment extends Component {
   }
 
   componentDidMount = () => {
+    this.createOrder()
     this.increaseProgress = setInterval(() => {
       const { progress } = this.state
       if (progress < 100) {
@@ -81,6 +53,29 @@ class ConfirmPayment extends Component {
         clearInterval(this.increaseProgress)
       }
     }, 1000)
+  }
+
+  createOrder = async () => {
+    try {
+      this.setState({ loading: true })
+      const {
+        cart: { cart: items, paymentMethod, paymentMethodId, restaurant, table }
+      } = this.props
+      const order = await OrderService.create({
+        items,
+        paymentMethod,
+        paymentMethodId,
+        restaurantId: restaurant.id,
+        tableId: table.id
+      })
+      this.setState({
+        order
+      })
+      this.setState({ loading: false })
+      this.props.navigation.navigate('App')
+    } catch (error) {
+      ErrorHandler(error)
+    }
   }
 
   renderDetail = ({ item, index }) => {
@@ -133,7 +128,12 @@ class ConfirmPayment extends Component {
     if (paymentMethod === 'cash') {
       return (
         <Fragment>
-          <Text style={[styles.title, { alignSelf: 'flex-start', marginBottom: 10 }]}>
+          <Text
+            style={[
+              styles.title,
+              { alignSelf: 'flex-start', marginBottom: 10 }
+            ]}
+          >
             Payment method: Cash
           </Text>
           <RowValue label="Cash" value="1,000" />
@@ -143,10 +143,20 @@ class ConfirmPayment extends Component {
     } else if (paymentMethod === 'card') {
       return (
         <Fragment>
-          <Text style={[styles.title, { alignSelf: 'flex-start', marginBottom: 10 }]}>
+          <Text
+            style={[
+              styles.title,
+              { alignSelf: 'flex-start', marginBottom: 10 }
+            ]}
+          >
             Payment method: Credit card
           </Text>
-          <Text style={[styles.title, { alignSelf: 'flex-start', marginBottom: 10 }]}>
+          <Text
+            style={[
+              styles.title,
+              { alignSelf: 'flex-start', marginBottom: 10 }
+            ]}
+          >
             Transaction number: 1v1309014-2
           </Text>
         </Fragment>
@@ -167,22 +177,23 @@ class ConfirmPayment extends Component {
   }
 
   done = () => {
-    this.props.navigation.navigate('ReviewScreen')
+    const { order } = this.state
+    this.props.navigation.navigate('ReviewScreen', { orderId: order.id })
   }
   render () {
     const {
-      cart: { cart }
+      cart: { cart, paymentMethod }
     } = this.props
+    const title = paymentMethod === 'card' ? 'Card Payment' : 'Cash Payment'
     const { progress } = this.state
-    const mock_cart = [
-      { id: 1, productName: 'Test', totalPrice: 500, quantity: 10 },
-      { id: 2, productName: 'Test', totalPrice: 500, quantity: 10 },
-      { id: 3, productName: 'Test', totalPrice: 500, quantity: 10 },
-      { id: 4, productName: 'Test', totalPrice: 500, quantity: 10 }
-    ]
     return (
       <View style={styles.screen}>
-        <AppHeader back={this.back} done={progress === 100} finish={this.done} />
+        <Header
+          left="back"
+          onPressLeft={this.back}
+          right="Done"
+          title={title}
+        />
         <View style={styles.br} />
         <View style={styles.br} />
         <ScrollView
@@ -220,15 +231,10 @@ class ConfirmPayment extends Component {
               </View>
             </View>
             <View style={styles.hr} />
-            <BillDetail cart={mock_cart} />
+            <BillDetail cart={cart} />
             <View style={styles.hr} />
-            <RowValue label="Total items..." value="4" />
-            <RowValue label="Subtotal" value="64" />
-            <RowValue label="Tax (7.000%)…" value="930" />
-            <View style={[styles.row, styles.justifyBetween]}>
-              <Text style={styles.thead}>Total :</Text>
-              <Text style={styles.totalPrice}>฿ 995.00</Text>
-            </View>
+            <CartSummary cart={cart} />
+            <View style={styles.br} />
             <View style={styles.br} />
             <View style={styles.hr} />
             {this.renderFooter()}
@@ -273,11 +279,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#7E7E7E',
     marginBottom: 10
-  },
-  totalPrice: {
-    fontSize: 18,
-    color: '#E45655',
-    fontWeight: 'bold'
   },
   hr: {
     width: '100%',

@@ -27,7 +27,7 @@ const Avatar = ({ index }) => {
 
 export default props => {
   const { data, index } = props
-  const { quantity, productName, totalPrice, selectedOptionsName, note } = data
+  const { quantity, menuName, totalPrice, selectedOptionsName, note } = data
   return (
     <View style={styles.wrapper}>
       <View style={styles.row}>
@@ -39,7 +39,7 @@ export default props => {
           {index === 0 ? (
             <Text style={[styles.thead, styles.nameThead]}>Order Details</Text>
           ) : null}
-          <Text style={styles.name}>{productName}</Text>
+          <Text style={styles.name}>{menuName}</Text>
           <View style={styles.br} />
           {renderOptions(selectedOptionsName, note)}
           <Text style={styles.option}>{note}</Text>

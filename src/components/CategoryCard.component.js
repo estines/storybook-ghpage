@@ -23,7 +23,7 @@ export default class CategoryCard extends Component {
 
   getQuantity = id => {
     const { cart } = this.props
-    const targetItems = cart.filter(c => c.productId === id)
+    const targetItems = cart.filter(c => c.menuId === id)
     console.log(targetItems, 'targetItems')
     let total = 0
     for (let item of targetItems) {

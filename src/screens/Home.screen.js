@@ -7,7 +7,10 @@ import {
   Dimensions,
   TouchableOpacity
 } from 'react-native'
+import { connect } from 'react-redux'
 
+// redux
+import { fetchProfile } from '../store/actions'
 // components
 import Header from '../components/Header.component'
 // assets
@@ -33,63 +36,85 @@ const Button = props => {
   )
 }
 
-export default props => {
-  const {
-    navigation: { openDrawer, navigate }
-  } = props
-  return (
-    <View style={styles.screen}>
-      <Header
-        left="more"
-        containerStyle={styles.header}
-        onPressLeft={openDrawer}
-      />
-      <Row>
-        <Button
-          title="SCAN"
-          icon={BARCODE}
-          onPress={() => navigate('ScanStack')}
-        />
-        <Button
-          title="MY CART"
-          icon={CART}
-          onPress={() => navigate('OrderStack')}
-        />
-      </Row>
-      <Row>
-        <Button
-          title="ACCOUNT"
-          icon={ACCOUNT}
-          onPress={() => navigate('AccountStack')}
-        />
-        <Button
-          title="HISTORY"
-          icon={HISTORY}
-          onPress={() => navigate('HistoryStack')}
-        />
-      </Row>
-      <Row>
-        <Button
-          title="FEEDS"
-          icon={FEEDS}
-          onPress={() => navigate('FeedStack')}
-        />
-        <Button
-          title="STAMPS"
-          icon={STAMPS}
-          onPress={() => navigate('StampStack')}
-        />
-      </Row>
-    </View>
-  )
-}
-const { width: WIDTH } = Dimensions.get('window')
+class HomeScreen extends React.Component {
+  componentDidMount = () => {
+    this.props.fetchProfile()
+  }
 
-const cardWidth = WIDTH / 2 - 30
+  render () {
+    const {
+      navigation: { openDrawer, navigate }
+    } = this.props
+    return (
+      <View style={styles.screen}>
+        <Header
+          left="more"
+          containerStyle={styles.header}
+          onPressLeft={openDrawer}
+        />
+        <Row>
+          <Button
+            title="SCAN"
+            icon={BARCODE}
+            onPress={() => navigate('ScanStack')}
+          />
+          <Button
+            title="MY CART"
+            icon={CART}
+            onPress={() => navigate('OrderStack')}
+          />
+        </Row>
+        <Row>
+          <Button
+            title="ACCOUNT"
+            icon={ACCOUNT}
+            onPress={() => navigate('AccountStack')}
+          />
+          <Button
+            title="HISTORY"
+            icon={HISTORY}
+            onPress={() => navigate('HistoryStack')}
+          />
+        </Row>
+        <Row>
+          <Button
+            title="FEEDS"
+            icon={FEEDS}
+            onPress={() => navigate('FeedStack')}
+          />
+          <Button
+            title="STAMPS"
+            icon={STAMPS}
+            onPress={() => navigate('StampStack')}
+          />
+        </Row>
+      </View>
+    )
+  }
+}
+
+const mapState = state => state.profile
+
+export default connect(
+  mapState,
+  { fetchProfile }
+)(HomeScreen)
+
+const { width: WIDTH, height: HEIGHT } = Dimensions.get('window')
+
+const cardWidth = HEIGHT / 5
 const styles = StyleSheet.create({
+  icon: {
+    width: cardWidth * 0.4,
+    height: cardWidth * 0.4,
+    resizeMode: 'contain',
+    marginBottom: 20
+  },
   header: {
     position: 'absolute',
-    top: 0
+    top: 0,
+    left: 0,
+    right: 0
   },
   title: {
     position: 'absolute',
@@ -122,6 +147,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
+    backgroundColor: '#FFF'
   }
 })

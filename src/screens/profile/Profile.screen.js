@@ -19,10 +19,9 @@ import MAIL from '../../assets/icon/mail.png'
 import FACEBOOK from '../../assets/icon/facebook.png'
 import PLACE from '../../assets/icon/place-red.png'
 import CURRENT_POSITION from '../../assets/icon/current-position.png'
+import AVATAR from '../../assets/img/boy.png'
 // config
 import { mapStyle } from '../../config'
-
-const ED_SHEERAN = 'https://ichef.bbci.co.uk/images/ic/960x540/p02kq8k6.jpg'
 
 const { PROVIDER_GOOGLE, Marker } = MapView
 
@@ -97,7 +96,8 @@ class ProfileScreen extends Component {
     phoneNumber: '+123 456 789 234',
     email: 'Shawneat@mail.com',
     facebook: 'Shawn Mentos Facebook',
-    address: '497 Sukhumvit road, Silom'
+    address: '497 Sukhumvit road, Silom',
+    location: null
   }
 
   componentDidMount () {
@@ -106,16 +106,22 @@ class ProfileScreen extends Component {
   }
 
   getLocationAsync = async () => {
-    await Permissions.askAsync(Permissions.LOCATION)
-    let location = await Location.getCurrentPositionAsync({})
-    if (location && location.coords) {
-      this.setState({
-        location: {
-          ...location.coords,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421
-        }
-      })
+    try {
+      console.log('get location....')
+      await Permissions.askAsync(Permissions.LOCATION)
+      let location = await Location.getCurrentPositionAsync({})
+      console.log(location, 'location....')
+      if (location && location.coords) {
+        this.setState({
+          location: {
+            ...location.coords,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421
+          }
+        })
+      }
+    } catch (error) {
+      console.log(error, 'error geet location')
     }
   }
 
@@ -128,8 +134,21 @@ class ProfileScreen extends Component {
   }
 
   render () {
-    const { phoneNumber, email, facebook, address, location, name, image } = this.props
-    let imgUrl = `https://orderking.s3.amazonaws.com/images/thumbnail/${image}`
+    const {
+      phoneNumber,
+      email,
+      facebook,
+      address,
+      location,
+      name,
+      image
+    } = this.props
+    let avatar = AVATAR
+    if (image && image !== null) {
+      avatar = {
+        uri: `https://orderking.s3.amazonaws.com/images/thumbnail/${image}`
+      }
+    }
     return (
       <View style={styles.screen}>
         <AppHeader onPressLeft={this.back} onPressRight={this.edit} />
@@ -137,23 +156,25 @@ class ProfileScreen extends Component {
           <Text style={styles.screenTitle}>Profile</Text>
         </View>
         <View style={styles.top} />
-        <MapView
-          style={styles.mapView}
-          provider={PROVIDER_GOOGLE}
-          showsUserLocation={false}
-          region={location}
-          initialRegion={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421
-          }}
-          customMapStyle={mapStyle}
-        >
-          <Marker coordinate={location}>
-            <Image source={CURRENT_POSITION} style={styles.marker} />
-          </Marker>
-        </MapView>
+        {location && location !== null ? (
+          <MapView
+            style={styles.mapView}
+            provider={PROVIDER_GOOGLE}
+            showsUserLocation={false}
+            region={location}
+            initialRegion={{
+              latitude: 37.78825,
+              longitude: -122.4324,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421
+            }}
+            customMapStyle={mapStyle}
+          >
+            <Marker coordinate={location}>
+              <Image source={CURRENT_POSITION} style={styles.marker} />
+            </Marker>
+          </MapView>
+        ) : null}
         <View style={styles.container}>
           <View style={styles.card}>
             <LinearGradient
@@ -162,7 +183,7 @@ class ProfileScreen extends Component {
               start={[0, 0]}
               end={[1, 1]}
             >
-              <Image source={{ uri: image && image !== null ? imgUrl : ED_SHEERAN }} style={[styles.avatar]} />
+              <Image source={avatar} style={styles.avatar} />
             </LinearGradient>
             <View style={styles.br} />
             <Text style={styles.name}>{name}</Text>

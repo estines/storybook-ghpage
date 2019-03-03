@@ -87,7 +87,7 @@ class MenuScreen extends Component {
     } else if (type === 'DECREMENT') {
       const { id } = menu
       let { cart } = this.state
-      let targetItems = await cart.filter(c => c.productId === id)
+      let targetItems = await cart.filter(c => c.menuId === id)
       if (targetItems && targetItems.length > 0) {
         const targetItem = targetItems[targetItems.length - 1]
         const { quantity } = targetItem
@@ -98,7 +98,7 @@ class MenuScreen extends Component {
           targetItems = [...targetItems, targetItem]
         }
       }
-      const newCart = await cart.filter(c => c.productId !== id)
+      const newCart = await cart.filter(c => c.menuId !== id)
       this.setState({
         cart: [...newCart, ...targetItems]
       })

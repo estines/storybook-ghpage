@@ -1,6 +1,15 @@
 import React from 'react'
-import { View, ImageBackground, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
+import {
+  View,
+  ImageBackground,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity
+} from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons'
+import { StackActions, NavigationActions } from 'react-navigation'
+
 export default props => {
   return (
     <ImageBackground
@@ -10,11 +19,19 @@ export default props => {
       <View style={styles.container}>
         <View style={styles.card}>
           <View style={styles.topCard}>
-            <TouchableOpacity style={styles.closeBtn} onPress={() => props.navigation.navigate('HomeScreen')}>
+            <TouchableOpacity
+              style={styles.closeBtn}
+              onPress={async () => {
+                props.navigation.navigate('Feeds')
+              }}
+            >
               <MaterialIcons name="close" color="#FFF" size={30} />
             </TouchableOpacity>
             <Text style={styles.title}>Congrats!</Text>
-            <Image source={require('../../assets/img/star.png')} style={{ marginVertical: 20 }} />
+            <Image
+              source={require('../../assets/img/star.png')}
+              style={{ marginVertical: 20 }}
+            />
           </View>
           <Text style={styles.bottom}>
             <Text style={styles.subTitle}>

@@ -2,13 +2,19 @@ import React from 'react'
 import { StyleSheet, View, Image, FlatList, Dimensions } from 'react-native'
 
 const renderFeed = ({ item }) => {
-  return (
-    <View style={styles.imgWrapper}>
-      {item.img ? (
-        <Image source={{ uri: item.img }} style={styles.image} />
-      ) : null}
-    </View>
-  )
+  const { images } = item
+  if (images && images.length > 0) {
+    const image = `https://orderking.s3.amazonaws.com/images/thumbnail/${
+      images[0]
+    }`
+    return (
+      <View style={styles.imgWrapper}>
+        <Image source={{ uri: image }} style={styles.image} />
+      </View>
+    )
+  } else {
+    return <View style={styles.imgWrapper} />
+  }
 }
 
 export default props => {
@@ -43,7 +49,7 @@ const imageSize = WIDTH / 3 - 5
 const styles = StyleSheet.create({
   imgWrapper: {
     flex: 1,
-    padding: 5
+    padding: 1
   },
   row: {
     backgroundColor: '#FFF',

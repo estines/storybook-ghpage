@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#FFF',
     marginVertical: 5,
-    marginHorizontal: 5
+    marginHorizontal: 5,
+    width: '100%'
   }
 })
