@@ -8,6 +8,7 @@ import store from './src/store'
 import AuthStack from './src/navigators/auth.stack'
 import SplashScreen from './src/screens/Splash.screen'
 import Drawer from './src/navigators/drawer'
+import StorybookUI from './storybook'
 
 // import ScanScreen from './src/screens/order/Review.screen'
 
@@ -29,7 +30,7 @@ class App extends React.Component {
     }
   }
 
-  render () {
+  render() {
     return (
       <Provider store={store}>
         <AppContainer
@@ -74,6 +75,6 @@ const Root = createSwitchNavigator(
   }
 )
 
-export default createAppContainer(Root)
+const Application = process.env['IS_STORYBOOK'] === 'true' ? StorybookUI : createAppContainer(Root)
 
-// export default createAppContainer(Root)
+export default Application
