@@ -13,15 +13,17 @@ import Collapsible from 'react-native-collapsible'
 // components
 import CounterButton from './CounterButton.component'
 
+import RICE from '../assets/icon/rice.png'
+
 export default class CategoryCard extends Component {
   state = {
     amount: 0,
     showBody: false
   }
 
-  getQuantity = (id) => {
+  getQuantity = id => {
     const { cart } = this.props
-    const targetItems = cart.filter(c => c.productId === id)
+    const targetItems = cart.filter(c => c.menuId === id)
     console.log(targetItems, 'targetItems')
     let total = 0
     for (let item of targetItems) {
@@ -31,12 +33,16 @@ export default class CategoryCard extends Component {
   }
 
   renderMenu = ({ item }) => {
-    const { img, name, description, price, id } = item
+    const { images, name, description, price, id } = item
     const quantity = this.getQuantity(id)
     const counterName = `amount_${id}`
+    let img = ''
+    if (images && images.length > 0) {
+      img = `https://orderking.s3.amazonaws.com/images/thumbnail/${images[0]}`
+    }
     return (
       <View style={styles.menuItem}>
-        <Image source={img} style={styles.menuImage} />
+        <Image source={{ uri: img }} style={styles.menuImage} />
         <View style={styles.menuDesc}>
           <View style={styles.menuDescTop}>
             <Text style={styles.name}>{name}</Text>
@@ -46,7 +52,7 @@ export default class CategoryCard extends Component {
             <Text style={styles.price}>{`฿ ${price}`}</Text>
             <CounterButton
               value={quantity}
-              onChange={(type) => this.props.addToCart(item, type)}
+              onChange={type => this.props.addToCart(item, type)}
               name={counterName}
             />
           </View>
@@ -56,29 +62,39 @@ export default class CategoryCard extends Component {
   }
   render () {
     const {
-      data: { icon, title },
-      menu
+      data: { menus, name }
     } = this.props
     const { showBody } = this.state
+    console.log(this.props, 'data....')
     return (
-      <View style={[styles.card]}>
+      <View style={styles.card}>
         <TouchableWithoutFeedback
           onPress={() => this.setState({ showBody: !showBody })}
         >
-          <View style={styles.cardHeader}>
+          <View
+            style={[
+              styles.cardHeader,
+              {
+                paddingBottom: showBody ? 5 : 10
+              }
+            ]}
+          >
             <View style={styles.row}>
               <Image
-                source={icon}
-                style={[styles.menuIcon, { tintColor: showBody ? '#EE805F' : '#898989' }]}
+                source={RICE}
+                style={[
+                  styles.menuIcon,
+                  { tintColor: showBody ? '#EE805F' : '#898989' }
+                ]}
               />
-              <Text style={styles.menuTitle}>{title}</Text>
+              <Text style={styles.menuTitle}>{name}</Text>
             </View>
             <MaterialIcons name="keyboard-arrow-down" size={24} color="gray" />
           </View>
         </TouchableWithoutFeedback>
         <Collapsible style={styles.cardBody} collapsed={!showBody}>
           <FlatList
-            data={menu}
+            data={menus}
             keyExtractor={(item, index) => index.toString()}
             renderItem={this.renderMenu}
             extraData={this.props}
@@ -91,7 +107,8 @@ export default class CategoryCard extends Component {
 
 const styles = StyleSheet.create({
   cardBody: {
-    marginTop: 20
+    marginTop: 10,
+    paddingVertical: 10
   },
   priceRow: {
     justifyContent: 'space-between'
@@ -115,11 +132,8 @@ const styles = StyleSheet.create({
   menuImage: {
     height: 80,
     width: 80,
-    resizeMode: 'stretch'
-  },
-  menuDesc: {
-    flex: 1,
-    paddingLeft: 10
+    resizeMode: 'stretch',
+    marginRight: 10
   },
   menuItem: {
     flexDirection: 'row',
@@ -147,13 +161,14 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     shadowColor: 'gray',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.3,
     shadowRadius: 5,
-    borderWidth: 0.2,
+    borderWidth: 1,
     borderColor: '#dbdbdb',
     padding: 20,
     backgroundColor: '#FFF',
     marginVertical: 5,
-    marginHorizontal: 5
+    marginHorizontal: 5,
+    paddingBottom: 5
   }
 })

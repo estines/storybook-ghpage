@@ -5,36 +5,55 @@ import {
   Text,
   Image,
   FlatList,
-  Dimensions,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  SafeAreaView
 } from 'react-native'
 import HeaderImageScrollView from 'react-native-image-header-scroll-view'
 import { LinearGradient } from 'expo'
+import { Header } from 'react-native-elements'
+import { ifIphoneX } from 'react-native-iphone-x-helper'
+import { MaterialIcons } from '@expo/vector-icons'
+import { connect } from 'react-redux'
 
+// redux
+import { addToCart } from '../../store/actions/index'
 // assets
 import HEADER from '../../assets/img/menu-bg.png'
 import BAHT_SYMBOL_GROUP from '../../assets/img/bath-symbol-group.png'
+import EMPTY_MENU from '../../assets/icon/empty-cart.png'
 
 // components
 import CategoryCard from '../../components/CategoryCard.component'
 import SearchMenu from '../../components/SearchMenu.component'
 import MenuDetail from '../../components/modals/MenuDetail.modal'
 
-// services
-import menuService from '../../services/menu.service'
+const ScreenHeader = props => {
+  return (
+    <SafeAreaView style={{ backgroundColor: 'transparent', height: 50 }}>
+      <Header
+        leftComponent={
+          <TouchableOpacity style={styles.backButtonStyle} onPress={props.back}>
+            <MaterialIcons name="keyboard-arrow-left" size={30} color="#FFF" />
+          </TouchableOpacity>
+        }
+        centerComponent={{
+          text: 'Menu',
+          style: { color: '#FFF', fontSize: 20 }
+        }}
+        barStyle="light-content"
+        containerStyle={{
+          backgroundColor: 'transparent',
+          justifyContent: 'space-around',
+          borderBottomWidth: 0,
+          paddingTop: ifIphoneX ? 0 : 10
+        }}
+      />
+    </SafeAreaView>
+  )
+}
 
-const CATEGORIES = [
-  {
-    icon: require('../../assets/icon/most-popular.png'),
-    title: 'Most Popular'
-  },
-  { icon: require('../../assets/icon/noodles.png'), title: 'Noodles' },
-  { icon: require('../../assets/icon/rice.png'), title: 'Rice' },
-  { icon: require('../../assets/icon/drinks.png'), title: 'Drinks' }
-]
-
-export default class LoginScreen extends Component {
+class MenuScreen extends Component {
   state = {
     menu: [],
     detailVisible: false,
@@ -42,28 +61,21 @@ export default class LoginScreen extends Component {
     cart: []
   }
 
-  componentDidMount () {
-    this.fetchMenu()
-  }
-
-  fetchMenu = async () => {
-    this.setState({ loading: true })
-    setTimeout(() => {
-      const menu = menuService.list()
-      this.setState({ menu, loading: false })
-    }, 0)
-  }
-
   renderCategory = ({ item }) => {
     const { cart } = this.state
-    return (
-      <CategoryCard
-        data={item}
-        cart={cart}
-        menu={this.state.menu}
-        addToCart={this.addToCart}
-      />
-    )
+    const {
+      menu: { menu }
+    } = this.props
+    if (item && item.menus.length > 0) {
+      return (
+        <CategoryCard
+          data={item}
+          cart={cart}
+          menu={menu}
+          addToCart={this.addToCart}
+        />
+      )
+    }
   }
 
   addToCart = async (menu, type) => {
@@ -75,7 +87,7 @@ export default class LoginScreen extends Component {
     } else if (type === 'DECREMENT') {
       const { id } = menu
       let { cart } = this.state
-      let targetItems = await cart.filter(c => c.productId === id)
+      let targetItems = await cart.filter(c => c.menuId === id)
       if (targetItems && targetItems.length > 0) {
         const targetItem = targetItems[targetItems.length - 1]
         const { quantity } = targetItem
@@ -86,17 +98,17 @@ export default class LoginScreen extends Component {
           targetItems = [...targetItems, targetItem]
         }
       }
-      const newCart = await cart.filter(c => c.productId !== id)
+      const newCart = await cart.filter(c => c.menuId !== id)
       this.setState({
         cart: [...newCart, ...targetItems]
       })
     }
   }
 
-  onSubmit = (item) => {
+  onSubmit = item => {
     const { cart } = this.state
     this.setState({
-      cart: [ ...cart, item ],
+      cart: [...cart, item],
       detailVisible: false
     })
   }
@@ -111,8 +123,30 @@ export default class LoginScreen extends Component {
     return total
   }
 
+  back = () => {
+    this.props.navigation.goBack()
+  }
+
+  submit = () => {
+    const { cart } = this.state
+    this.props.addToCart(cart)
+    this.props.navigation.goBack()
+  }
+
+  fetchCategories = async () => {
+    this.setState({ loading: true })
+    await this.props.fetchCategories()
+    this.setState({ loading: false })
+  }
+
   render () {
-    const { menu, detailVisible, focusMenu } = this.state
+    const { detailVisible, focusMenu, loading } = this.state
+    const {
+      menu: { categories },
+      cart: {
+        restaurant: { name: restaurantName, aboutUs: restaurantDescription }
+      }
+    } = this.props
     return (
       <View style={styles.screen}>
         <HeaderImageScrollView
@@ -123,37 +157,55 @@ export default class LoginScreen extends Component {
           style={{ paddingBottom: 100 }}
           contentContainerStyle={{ marginBottom: 100 }}
           ScrollViewComponent={ScrollView}
+          renderFixedForeground={() => (
+            <View style={styles.foreground}>
+              <ScreenHeader back={this.back} />
+            </View>
+          )}
         >
           <View style={styles.container}>
             <View style={[styles.card, styles.restaurantCard]}>
               <View style={styles.col}>
-                <Text style={styles.title}>Ada Ramen</Text>
-                <Text style={styles.subTitle}>Japanese Restaurant</Text>
+                <Text style={styles.title}>{restaurantName}</Text>
+                <Text style={styles.subTitle}>{restaurantDescription}</Text>
               </View>
               <Image source={BAHT_SYMBOL_GROUP} style={styles.bahtSymbol} />
             </View>
             <View style={styles.br} />
             <SearchMenu />
-            <FlatList
-              data={CATEGORIES}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={this.renderCategory}
-              extraData={menu}
-              scrollEnabled={false}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 150 }}
-            />
+            {categories.length > 0 ? (
+              <View style={styles.container}>
+                <FlatList
+                  data={categories}
+                  keyExtractor={(item, index) => index.toString()}
+                  extraData={this.state}
+                  renderItem={this.renderCategory}
+                  style={{ height: '100%', width: '100%' }}
+                  contentContainerStyle={{ paddingBottom: 100 }}
+                  showsVerticalScrollIndicator={false}
+                />
+              </View>
+            ) : (
+              <View style={styles.container}>
+                <Image source={EMPTY_MENU} />
+                <Text style={styles.emptyTitle}>
+                  You haven’t added any item
+                </Text>
+              </View>
+            )}
           </View>
         </HeaderImageScrollView>
         <View style={styles.submitButtonWrapper}>
-          <TouchableOpacity style={styles.submitBtnTouch}>
+          <TouchableOpacity style={styles.submitBtnTouch} onPress={this.submit}>
             <LinearGradient
               style={styles.submitBtn}
               colors={['#EE805F', '#E9685F', '#E8615F']}
               start={[0, 0]}
               end={[1, 0]}
             >
-              <Text style={styles.submitBtnText}>Order {this.renderTotalItems()} item</Text>
+              <Text style={styles.submitBtnText}>
+                Order {this.renderTotalItems()} item
+              </Text>
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -169,6 +221,17 @@ export default class LoginScreen extends Component {
 }
 
 const styles = StyleSheet.create({
+  backButtonStyle: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  foreground: {
+    flex: 1
+  },
   submitBtnTouch: {
     width: '60%',
     position: 'relative'
@@ -237,3 +300,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#F7F7F7'
   }
 })
+
+const mapState = state => {
+  return {
+    ...state
+  }
+}
+
+export default connect(
+  mapState,
+  { addToCart }
+)(MenuScreen)
