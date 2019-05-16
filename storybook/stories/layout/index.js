@@ -1,20 +1,24 @@
 import React from 'react'
 import { storiesOf } from '@storybook/react-native'
-import { View, Text } from 'react-native'
+import { View, TouchableOpacity, Text } from 'react-native'
 
-import { Column, Row, Br, Card } from '../../../src/components/layout'
+import { Column, Row, Br, Card, Box, Dialog } from '../../../src/components/layout'
 
 storiesOf('Layout', module)
   .add('Column', () => (
-    <CenteredView>
-      <Column style={{ backgroundColor: '#FFF' }}>
-        <Text>Column Area</Text>
-      </Column>
-    </CenteredView>
+    <Column>
+      <Text>Column1 Area</Text>
+      <Text>Column2 Area</Text>
+    </Column>
   ))
   .add('Row', () => (
     <CenteredView>
-      <Row style={{ backgroundColor: '#FFF' }} />
+      <Row style={{ backgroundColor: '#FFF' }}>
+        <Text>Row 1</Text>
+      </Row>
+      <Row style={{ backgroundColor: '#FFF' }}>
+        <Text>Row 2</Text>
+      </Row>
     </CenteredView>
   ))
   .add('Br', () => (
@@ -29,6 +33,44 @@ storiesOf('Layout', module)
       </Card>
     </CenteredView>
   ))
+  .add('Box', () => (
+    <CenteredView>
+      <Box>
+        <Text>Box</Text>
+      </Box>
+    </CenteredView>
+  ))
+  .add('Dialog', () => (
+    <DialogScreen />
+  ))
+
+class DialogScreen extends React.Component {
+  state = {
+    isVisible: false
+  }
+
+  onOpenDialog = () => {
+    this.setState({ isVisible: true })
+  }
+
+  onCloseDialog = () => {
+    this.setState({ isVisible: false })
+  }
+
+  render () {
+    return (
+      <CenteredView>
+        <TouchableOpacity onPress={this.onOpenDialog}>
+          <Text>Press to open Dialog</Text>
+        </TouchableOpacity>
+        <Dialog isVisible={this.state.isVisible} onCloseDialog={this.onCloseDialog}>
+          <Text>Hello inside Dialog</Text>
+        </Dialog>
+      </CenteredView>
+    )
+  }
+}
+
 
 const styles = {
   view: {

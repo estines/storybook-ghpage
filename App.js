@@ -53,7 +53,7 @@ class CheckAuth extends React.Component {
       axios.defaults.headers['Authorization'] = accessToken
       this.props.navigation.navigate('App')
     } else {
-      this.props.navigation.navigate('Auth')
+      this.props.navigation.navigate('App')
     }
   }
 
@@ -75,6 +75,5 @@ const Root = createSwitchNavigator(
   }
 )
 
-const Application = process.env['IS_STORYBOOK'] === 'true' ? StorybookUI : createAppContainer(Root)
-
-export default Application
+export default StorybookUI
+// createAppContainer(Root)

@@ -5,7 +5,7 @@
       "javascript": "javascriptreact",
       "vue-html": "html"
     },
-    "workbench.colorTheme": "Noctis",
+    "workbench.colorTheme": "Monokai Sharp",
     "editor.tabSize": 2,
     "editor.detectIndentation": true,
     "editor.folding": true,
