@@ -6,10 +6,7 @@
     "ios": "expo start --ios",
     "eject": "expo eject",
     "lint": "eslint .",
-    "postinstall": "rndebugger-open --expo",
-    "storybook": "IS_STORYBOOK=true expo start",
-    "storybook:android": "IS_STORYBOOK=true expo start --android",
-    "storybook:ios": "IS_STORYBOOK=true expo start --ios"
+    "postinstall": "rndebugger-open --expo"
   },
   "dependencies": {
     "@expo/react-native-action-sheet": "^2.1.0",

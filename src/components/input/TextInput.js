@@ -6,15 +6,15 @@ import AVATAR from '../../assets/icon/avatar.png'
 import PASSWORD from '../../assets/icon/password.png'
 import MOBILE from '../../assets/icon/mobile.png'
 
-const TextInput = ({ value, onChange, icon }) => (
+const TextInput = ({ value, onChangeText, icon }) => (
   <InputWrapper>
     <InputIcon icon={icon} />
-    <Input onChange={onChange} />
+    <Input onChangeText={onChangeText} />
   </InputWrapper>
 )
 
 TextInput.defaultProps = {
-  onChange: e => console.log(e.target.value),
+  onChangeText: text => console.log(text),
   icon: ''
 }
 
@@ -58,5 +58,4 @@ export const InputWrapper = styled.View`
     shadow-radius: 5;
     elevation: 1;
 `
-
 export default TextInput
