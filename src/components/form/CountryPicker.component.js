@@ -74,7 +74,7 @@ export default class CountryPicker extends React.Component {
     }
   }
 
-  render () {
+  render() {
     const { selected, label, inputStyles } = this.props
     const { visible } = this.state
     console.log(selected, 'selected...')
@@ -93,8 +93,8 @@ export default class CountryPicker extends React.Component {
               <Text style={[styles.name]}>{selectedItem.name}</Text>
             ]
           ) : (
-            <Text style={[styles.name]}>Choose country</Text>
-          )}
+              <Text style={[styles.name]}>Choose country</Text>
+            )}
         </TouchableOpacity>
         <Modal visible={visible} animationType="fade">
           <View style={styles.wrapper}>

@@ -8,9 +8,11 @@
   "rules": {
     "react-native/no-unused-styles": 2,
     "react-native/split-platform-components": 2,
-    "react/jsx-uses-vars": ["error"],
+    "react/jsx-uses-vars": [
+      "error"
+    ],
     "react/jsx-uses-react": "error",
     "camelcase": "off",
-    "no-underscore-dangle": "off",
+    "no-underscore-dangle": "off"
   }
 }

@@ -13,16 +13,32 @@ storiesOf('Button', module)
     </CenteredView>
   ))
   .add('SelectButton', () => (
-    <CenteredView>
-      <SelectButton items={mockData} />
-    </CenteredView>
+    <SelectButtonComponent />
   ))
 
-const mockData = [
-  { label: '1', value: 1 },
-  { label: '2', value: 2 },
-  { label: '3', value: 3 }
-]
+class SelectButtonComponent extends React.Component {
+  state = {
+    value: '1'
+  }
+
+  menuList = [
+    { label: 'Eat In', value: '1' },
+    { label: 'Take Away', value: '2' },
+    { label: 'Delivery', value: '3' }
+  ]
+
+  onSelectMenu = value => {
+    this.setState({ value })
+  }
+
+  render () {
+    return (
+      <CenteredView>
+        <SelectButton value={this.state.value} items={this.menuList} onChange={this.onSelectMenu} />
+      </CenteredView>
+    )
+  }
+}
 
 const styles = {
   view: {

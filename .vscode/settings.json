@@ -1,24 +1,23 @@
 {
-    "eslint.enable": true,
-    "prettier.eslintIntegration": true,
-    "emmet.includeLanguages": {
-      "javascript": "javascriptreact",
-      "vue-html": "html"
-    },
-    "workbench.colorTheme": "Monokai Sharp",
-    "editor.tabSize": 2,
-    "editor.detectIndentation": true,
-    "editor.folding": true,
-    "editor.foldingStrategy": "indentation",
-    "editor.showFoldingControls": "always",
-    "files.exclude": {
-      "**/.git": true,
-      "**/.svn": true,
-      "**/.hg": true,
-      "**/CVS": true,
-      "**/.DS_Store": true
-    },
-    "editor.formatOnSave": false,
-    "javascript.suggest.autoImports": false
-  }
-  
+  "eslint.enable": true,
+  "prettier.eslintIntegration": true,
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact",
+    "vue-html": "html"
+  },
+  "workbench.colorTheme": "Monokai Sharp",
+  "editor.tabSize": 2,
+  "editor.detectIndentation": true,
+  "editor.folding": true,
+  "editor.foldingStrategy": "indentation",
+  "editor.showFoldingControls": "always",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true
+  },
+  "editor.formatOnSave": false,
+  "javascript.suggest.autoImports": false
+}

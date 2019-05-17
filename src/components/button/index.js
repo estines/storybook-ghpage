@@ -17,35 +17,52 @@ export const SelectWrapper = styled.View`
     align-items: center;
 `
 
-export const SelectButton = ({ placeholder, items }) => (
+export const SelectButton = ({ value, items, onChange, width, height }) => (
   <SelectWrapper>
     <RNPicker
-      placeholder={{ label: 'Select', value: null }}
+      placeholder={{ label: 'Select...' }}
+      placeholderTextColor="#FFF"
+      value={value}
       items={items}
       style={{
         viewContainer: {
-          width: '25%',
+          width: width || 100,
           backgroundColor: '#ff5959',
-          height: 26,
+          height: height || 26,
           borderRadius: 13,
-          justifyContent: 'center'
+          justifyContent: 'center',
+          flexDirection: 'row',
+          alignItems: 'center'
+        },
+        inputIOSContainer: {
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center'
         },
         inputIOS: {
+          textAlign: 'center',
+          fontSize: 14,
+          fontWeight: 'bold',
+          color: '#fff',
           height: 26,
-          color: '#fff'
+          marginRight: 5
         },
         inputAndroid: {
           height: 26,
           color: '#fff'
         },
         iconContainer: {
-          right: 10
+          display: 'flex',
+          position: 'relative',
+          margin: 0
         }
       }}
+      onValueChange={onChange}
       useNativeAndroidPickerStyle={false}
       textInputProps={{ underlineColorAndroid: 'cyan' }}
       Icon={() => {
-        return <AntDesign name="down" size={24} color="black" />
+        return <AntDesign name="down" size={10} color="#FFF" />
       }}
     />
   </SelectWrapper>
