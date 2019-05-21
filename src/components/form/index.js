@@ -1,6 +1,0 @@
-export { default as TextInput } from './TextInput.component'
-export { default as SelectInput } from './SelectInput.component'
-export { default as DatePicker } from './DatePicker.component'
-export { default as ImagePickerGroup } from './ImagePickerGroup.component'
-export { default as CountryPicker } from './CountryPicker.component'
-export { default as AvatarInput } from './AvatarInput.component'
